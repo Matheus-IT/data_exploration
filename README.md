@@ -1,2 +1,2 @@
-# numpy_examples
-Some examples to learn more about numpy
+# Data science examples
+Some examples to learn more about data science
