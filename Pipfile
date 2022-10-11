@@ -9,6 +9,10 @@ openpyxl = "*"
 
 [dev-packages]
 ipykernel = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
