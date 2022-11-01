@@ -9,13 +9,23 @@ class Dot:
 
 
 @dataclass
+class Balloon(Dot):
+    is_stuck: bool = False
+    flew_away: bool = False
+
+
+@dataclass
 class Segment:
     start: Dot
     end: Dot
     segment_tilt_direction: Union[Dot, None]
 
-    def this_balloon_is_gonna_hit(self, balloon: Dot):
-        return self.start.x <= balloon.x <= self.end.x
+    def this_balloon_is_gonna_hit(self, balloon: Balloon):
+        if self.segment_tilt_direction is None:
+            # In case of a flat segment
+            return self.start.x <= balloon.x <= self.end.x and self.start.y > balloon.y
+        # In case of a tilted segment
+        return self.start.x <= balloon.x <= self.end.x and self.segment_tilt_direction.y > balloon.y
 
 
 # Utils ---------------------------------------------------------------
@@ -28,7 +38,7 @@ def read_numbers():
 
 
 def segment_tilt_direction(x1, y1, x2, y2):
-    if not y1 != y2:
+    if y1 == y2:
         return None
     if y1 > y2:
         return Dot(x1, y1)
@@ -51,11 +61,18 @@ while True:
     for i in range(line_segments):
         x1, y1, x2, y2 = read_numbers()
 
-        segment = Segment(
-            start=Dot(x1, y1),
-            end=Dot(x2, y2),
-            segment_tilt_direction=segment_tilt_direction(x1, y1, x2, y2),
-        )
+        if x2 > x1:
+            segment = Segment(
+                start=Dot(x1, y1),
+                end=Dot(x2, y2),
+                segment_tilt_direction=segment_tilt_direction(x1, y1, x2, y2),
+            )
+        else:
+            segment = Segment(
+                start=Dot(x2, y2),
+                end=Dot(x1, y1),
+                segment_tilt_direction=segment_tilt_direction(x1, y1, x2, y2),
+            )
 
         all_segments.append(segment)
 
@@ -66,7 +83,7 @@ while True:
 
     for i in range(queries):
         balloon_x = read_numbers()[0]
-        balloon = Dot(x=balloon_x, y=0)
+        balloon = Balloon(x=balloon_x, y=0)
 
         for segment in tilted_segments:
             if segment.this_balloon_is_gonna_hit(balloon):
@@ -76,9 +93,9 @@ while True:
         for segment in flat_segments:
             if segment.this_balloon_is_gonna_hit(balloon):
                 balloon.y = segment.end.y
+                balloon.is_stuck = True
                 print(balloon.x, balloon.y)
-            else:
-                print(balloon.x)
 
-        if len(flat_segments) == 0:
+        if not balloon.is_stuck:
+            balloon.flew_away = True
             print(balloon.x)
