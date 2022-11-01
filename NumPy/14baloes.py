@@ -55,8 +55,6 @@ while True:
     line_segments, queries = input_data
 
     all_segments: List[Segment] = []
-    tilted_segments: List[Segment] = []
-    flat_segments: List[Segment] = []
 
     for i in range(line_segments):
         x1, y1, x2, y2 = read_numbers()
@@ -76,25 +74,30 @@ while True:
 
         all_segments.append(segment)
 
-        if segment.segment_tilt_direction:
-            tilted_segments.append(segment)
-        else:
-            flat_segments.append(segment)
-
     for i in range(queries):
         balloon_x = read_numbers()[0]
         balloon = Balloon(x=balloon_x, y=0)
 
-        for segment in tilted_segments:
-            if segment.this_balloon_is_gonna_hit(balloon):
-                balloon.x = segment.segment_tilt_direction.x
-                balloon.y = segment.segment_tilt_direction.y
+        segments_balloon_may_hit: List[Segment] = []
 
-        for segment in flat_segments:
+        for segment in all_segments:
             if segment.this_balloon_is_gonna_hit(balloon):
-                balloon.y = segment.end.y
-                balloon.is_stuck = True
-                print(balloon.x, balloon.y)
+                segments_balloon_may_hit.append(segment)
+
+        segments_balloon_may_hit = sorted(segments_balloon_may_hit, key=lambda s: s.start.y)
+        segments_balloon_may_hit = sorted(segments_balloon_may_hit, key=lambda s: s.end.y)
+
+        for segment in segments_balloon_may_hit:
+            if segment.this_balloon_is_gonna_hit(balloon):
+                if segment.segment_tilt_direction is None:
+                    # Case of flat segments
+                    balloon.y = segment.end.y
+                    balloon.is_stuck = True
+                    print(balloon.x, balloon.y)
+                else:
+                    # Case of tilted segments
+                    balloon.x = segment.segment_tilt_direction.x
+                    balloon.y = segment.segment_tilt_direction.y
 
         if not balloon.is_stuck:
             balloon.flew_away = True
