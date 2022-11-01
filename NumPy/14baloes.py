@@ -79,14 +79,19 @@ while True:
         balloon = Balloon(x=balloon_x, y=0)
 
         segments_balloon_may_hit: List[Segment] = []
-
         for segment in all_segments:
+            # Before asserting that the balloon is going to hit this segment we
+            # first group all the segments the balloon may hit
             if segment.this_balloon_is_gonna_hit(balloon):
                 segments_balloon_may_hit.append(segment)
 
+        # Then we sort the segments by the y axis, to put the ones that are
+        # closer to the balloon to the beginning of the list
         segments_balloon_may_hit = sorted(segments_balloon_may_hit, key=lambda s: s.start.y)
         segments_balloon_may_hit = sorted(segments_balloon_may_hit, key=lambda s: s.end.y)
 
+        # Now that we have which segments the balloon may hit in ascending
+        # order we can determine if the balloon got stuck or flew away
         for segment in segments_balloon_may_hit:
             if segment.this_balloon_is_gonna_hit(balloon):
                 if segment.segment_tilt_direction is None:
@@ -99,6 +104,8 @@ while True:
                     balloon.x = segment.segment_tilt_direction.x
                     balloon.y = segment.segment_tilt_direction.y
 
+        # If the balloon didn't get stuck after checking all flat segments it
+        # may hit, we can assure it flew away
         if not balloon.is_stuck:
             balloon.flew_away = True
             print(balloon.x)
