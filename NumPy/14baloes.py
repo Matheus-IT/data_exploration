@@ -1,3 +1,4 @@
+import numpy as np
 from dataclasses import dataclass
 from typing import List, Union
 
@@ -54,7 +55,7 @@ while True:
         break
     line_segments, queries = input_data
 
-    all_segments: List[Segment] = []
+    all_segments = np.array([])
 
     for i in range(line_segments):
         x1, y1, x2, y2 = read_numbers()
@@ -72,18 +73,15 @@ while True:
                 segment_tilt_direction=segment_tilt_direction(x1, y1, x2, y2),
             )
 
-        all_segments.append(segment)
+        all_segments = np.append(all_segments, segment)
 
     for i in range(queries):
         balloon_x = read_numbers()[0]
         balloon = Balloon(x=balloon_x, y=0)
 
-        segments_balloon_may_hit: List[Segment] = []
-        for segment in all_segments:
-            # Before asserting that the balloon is going to hit this segment we
-            # first group all the segments the balloon may hit
-            if segment.this_balloon_is_gonna_hit(balloon):
-                segments_balloon_may_hit.append(segment)
+        # Before asserting that the balloon is going to hit this segment we
+        # first group all the segments the balloon may hit
+        segments_balloon_may_hit = np.array(list(filter(lambda s: s.this_balloon_is_gonna_hit(balloon), all_segments)))
 
         # Then we sort the segments by the y axis, to put the ones that are
         # closer to the balloon to the beginning of the list

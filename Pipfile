@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 seaborn = "*"
 openpyxl = "*"
+icecream = "*"
 
 [dev-packages]
 ipykernel = "*"
