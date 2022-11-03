@@ -1,6 +1,6 @@
-import numpy as np
+import sys
 from dataclasses import dataclass
-from typing import List, Union
+from typing import Union
 
 
 @dataclass
@@ -30,11 +30,7 @@ class Segment:
 
 
 # Utils ---------------------------------------------------------------
-def read_numbers():
-    try:
-        input_data = input()
-    except EOFError:
-        return []
+def read_numbers(input_data: str):
     return list(map(int, input_data.split(' ')))
 
 
@@ -49,16 +45,18 @@ def segment_tilt_direction(x1, y1, x2, y2):
 # ---------------------------------------------------------------------
 
 
-while True:
-    input_data = read_numbers()
+for line in sys.stdin:
+    input_data = str(line)
     if not input_data:
         break
-    line_segments, queries = input_data
+    line_segments, queries = read_numbers(input_data)
 
-    all_segments = np.array([])
+    all_segments = []
 
-    for i in range(line_segments):
-        x1, y1, x2, y2 = read_numbers()
+    for _ in range(line_segments):
+        line = sys.stdin.readline()
+        input_data = str(line)
+        x1, y1, x2, y2 = read_numbers(input_data)
 
         if x2 > x1:
             segment = Segment(
@@ -73,24 +71,22 @@ while True:
                 segment_tilt_direction=segment_tilt_direction(x1, y1, x2, y2),
             )
 
-        all_segments = np.append(all_segments, segment)
+        all_segments.append(segment)
 
-    for i in range(queries):
-        balloon_x = read_numbers()[0]
+    # Then we sort the segments by the y axis, to put the ones that are
+    # closer to the balloon to the beginning of the list
+    all_segments = sorted(all_segments, key=lambda s: s.start.y)
+    all_segments = sorted(all_segments, key=lambda s: s.end.y)
+
+    for _ in range(queries):
+        line = line = sys.stdin.readline()
+        input_data = str(line)
+        balloon_x = read_numbers(input_data)[0]
         balloon = Balloon(x=balloon_x, y=0)
 
-        # Before asserting that the balloon is going to hit this segment we
-        # first group all the segments the balloon may hit
-        segments_balloon_may_hit = np.array(list(filter(lambda s: s.this_balloon_is_gonna_hit(balloon), all_segments)))
-
-        # Then we sort the segments by the y axis, to put the ones that are
-        # closer to the balloon to the beginning of the list
-        segments_balloon_may_hit = sorted(segments_balloon_may_hit, key=lambda s: s.start.y)
-        segments_balloon_may_hit = sorted(segments_balloon_may_hit, key=lambda s: s.end.y)
-
-        # Now that we have which segments the balloon may hit in ascending
-        # order we can determine if the balloon got stuck or flew away
-        for segment in segments_balloon_may_hit:
+        # Now that we have the segments in ascending order we can determine if
+        # the balloon got stuck or flew away
+        for segment in all_segments:
             if segment.this_balloon_is_gonna_hit(balloon):
                 if segment.segment_tilt_direction is None:
                     # Case of flat segments
