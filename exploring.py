@@ -1,7 +1,29 @@
 import numpy as np
-from icecream import ic
 
-arr = np.array([1, 2, 3, 4, 5])
-new_arr = np.array(list(filter(lambda x: x % 2 == 0, arr)))
+t = np.array(
+    [
+        [1, 0, 0, 0],
+        [0, 1, 0, 2],
+        [0, 0, 1, -2],
+        [0, 0, 0, 1],
+    ]
+)
+r = np.array(
+    [
+        [1, 0, 0, 0],
+        [0, 0, -1, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 1],
+    ]
+)
+s = np.array(
+    [
+        [10, 0, 0, 0],
+        [0, 10, 0, 0],
+        [0, 0, 10, 0],
+        [0, 0, 0, 1],
+    ]
+)
 
-ic(new_arr)
+
+print(t @ r @ s)
