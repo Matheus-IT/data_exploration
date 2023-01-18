@@ -8,6 +8,7 @@ seaborn = "*"
 openpyxl = "*"
 icecream = "*"
 yappi = "*"
+sympy = "*"
 
 [dev-packages]
 ipykernel = "*"
