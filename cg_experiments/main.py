@@ -14,17 +14,25 @@ from translation_matrices import *
 from matrix import *
 from equations import *
 
-scale = get_non_uniform_scale_matrix(10, 10, 10)
+scale = get_non_uniform_scale_matrix(5, 10, 5)
 
-rotation_x = get_rotation_matrix_x(90)
+rotation_x = get_rotation_matrix_x(45)
 rotation_z = get_rotation_matrix_z(30)
 
-translation = get_translation_matrix(0, 2, -2)
+translation = get_translation_matrix(0, 2, 3)
 
-rotation = rotation_x  # @ rotation_z
+rotation = rotation_x @ rotation_z
+
+print("scale", scale)
+print("rotation", rotation)
+print("translation", translation)
+print()
 
 m = translation @ rotation @ scale
 m_inv = inverse_matrix(scale) @ inverse_matrix(rotation) @ inverse_matrix(translation)
+
+print("M", m)
+print("M inv", m_inv)
 
 o = np.array(
     [
@@ -50,5 +58,6 @@ d_l = m_inv @ d
 A = np.array([[-0.5], [0], [0.5], [0]])
 
 t = calc_ray_equation(A, o_l, d_l)
+print("t", t)
 
-print(calc_point_of_intersection(o_l, d_l, t))
+print("intersection point", calc_point_of_intersection(o_l, d_l, t))
