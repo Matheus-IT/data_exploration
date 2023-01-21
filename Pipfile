@@ -9,6 +9,7 @@ openpyxl = "*"
 icecream = "*"
 yappi = "*"
 sympy = "*"
+pyinstrument = "*"
 
 [dev-packages]
 ipykernel = "*"
