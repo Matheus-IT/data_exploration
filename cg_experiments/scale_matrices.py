@@ -15,8 +15,9 @@ def get_non_uniform_scale_matrix(x, y, z):
 def get_uniform_scale_matrix(amount):
     return np.array(
         [
-            [amount, 0, 0],
-            [0, amount, 0],
-            [0, 0, amount],
+            [amount, 0, 0, 0],
+            [0, amount, 0, 0],
+            [0, 0, amount, 0],
+            [0, 0, 0, 1],
         ]
     )
