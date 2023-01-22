@@ -65,7 +65,7 @@ def main():
 
     A = np.array([[-0.5], [0], [0.5], [0]])
 
-    t = calc_ray_equation(A, o_l, d_l)
+    t = calc_ray_intersection_with_surface(A, o_l, d_l)
     print("t\n", t)
 
     print("intersection point\n", sp.N(calc_point_of_intersection(o_l, d_l, t)))
