@@ -1,4 +1,4 @@
-from sympy import Matrix, simplify
+from sympy import Matrix, simplify, solve, Symbol
 
 
 def calc_ray_intersection_with_surface(p0, o, d, n=Matrix([[0], [1], [0], [0]])):
@@ -10,3 +10,15 @@ def calc_ray_intersection_with_surface(p0, o, d, n=Matrix([[0], [1], [0], [0]]))
 def calc_point_of_intersection(o, d, t):
     p = Matrix(o) + Matrix(d) * t
     return p[:3]
+
+
+def calc_ray_intersection_with_sphere(d, o):
+    d, o = Matrix(d), Matrix(o)
+
+    a = d.dot(d)
+    b = 2 * o.dot(d)
+    c = o.dot(o) - 1
+
+    x = Symbol("x")
+
+    return solve(a * x**2 + b * x + c)

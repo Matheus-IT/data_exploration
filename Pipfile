@@ -10,6 +10,8 @@ icecream = "*"
 yappi = "*"
 sympy = "*"
 pyinstrument = "*"
+scikit-image = "*"
+plotly = "*"
 
 [dev-packages]
 ipykernel = "*"
