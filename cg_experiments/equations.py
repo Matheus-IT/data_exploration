@@ -4,7 +4,7 @@ from sympy import Matrix, simplify, solve, Symbol
 def calc_ray_intersection_with_surface(p0, o, d, n=Matrix([[0], [1], [0], [0]])):
     numerator = Matrix(Matrix(p0) - Matrix(o)).dot(n)
     denominator = Matrix(d).dot(n)
-    return simplify(f"{numerator}/{denominator}")
+    return numerator / denominator
 
 
 def calc_point_of_intersection(o, d, t):
@@ -37,3 +37,11 @@ def calc_ray_intersection_with_cylinder(d, o):
     c = ox**2 + oz**2 - 1
 
     return solve(a * x**2 + b * x + c, x)
+
+
+def get_the_smallest(p):
+    if p[0] < p[1]:
+        return p[0]
+    if p[0] > p[1]:
+        return p[1]
+    return None
