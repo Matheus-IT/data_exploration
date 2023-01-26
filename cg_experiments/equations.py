@@ -45,3 +45,8 @@ def get_the_smallest(p):
     if p[0] > p[1]:
         return p[1]
     return None
+
+
+def calc_interception_with_circle(dot):
+    dot = Matrix(dot)
+    return (dot[0] ** 2 + dot[2] ** 2) <= 1

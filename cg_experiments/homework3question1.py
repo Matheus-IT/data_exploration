@@ -37,9 +37,9 @@ def main():
 
     d = np.array(
         [
-            [-4],
-            [-2],
-            [-4],
+            [sp.simplify(f"-{2}/{3}")],
+            [sp.simplify(f"-{1}/{3}")],
+            [sp.simplify(f"-{2}/{3}")],
             [0],
         ]
     )
