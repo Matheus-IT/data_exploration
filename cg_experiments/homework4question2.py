@@ -65,15 +65,30 @@ def main():
 
     print("interception_point", interception_point)
 
+    # now we're going to try to calculate the intersection with the top surface
+
     A = np.array([[0], [0.5], [0], [0]])
 
     t = calc_ray_intersection_with_surface(A, o_l, d_l)
     print("surface t\n", t)
 
-    # print("t\n", sp.N(sp.Matrix(t)))
-    # intersection = calc_point_of_intersection(o_l, d_l, t)
-    # print("intersection\n", intersection)
-    # print("intersection\n", sp.N(sp.Matrix(intersection)))
+    interception_point = calc_point_of_intersection(o_l, d_l, t)
+
+    print("interception_point", interception_point)
+
+    print(calc_interception_with_circle(interception_point))
+
+    # since there's no interception now i'm going to calculate the interception
+    # with the bottom surface
+    A = np.array([[0], [-0.5], [0], [0]])
+
+    t = calc_ray_intersection_with_surface(A, o_l, d_l, n=sp.Matrix([0, -1, 0, 0]))
+    print("surface t\n", t)
+
+    interception_point = calc_point_of_intersection(o_l, d_l, t)
+    print("interception_point", interception_point)
+
+    print(calc_interception_with_circle(interception_point))
 
 
 if __name__ == "__main__":
