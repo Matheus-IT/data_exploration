@@ -57,11 +57,8 @@ def main():
     print("d_l\n", d_l)
 
     t = calc_ray_intersection_with_sphere(d_l, o_l)
-    # print("t\n", sp.N(sp.Matrix(t)))
+
     print("t\n", t)
-    # intersection = calc_point_of_intersection(o_l, d_l, t)
-    # print("intersection\n", intersection)
-    # print("intersection\n", sp.N(sp.Matrix(intersection)))
 
 
 if __name__ == "__main__":
