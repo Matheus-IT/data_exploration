@@ -12,6 +12,8 @@ sympy = "*"
 pyinstrument = "*"
 scikit-image = "*"
 plotly = "*"
+pydicom = "*"
+pillow = "*"
 
 [dev-packages]
 ipykernel = "*"
