@@ -1,6 +1,8 @@
 from PIL import Image
 import pydicom
+from pydicom.data import get_testdata_file
 from utils import show_side_by_side
+import numpy as np
 
 
 def grayscale(colored_img):
