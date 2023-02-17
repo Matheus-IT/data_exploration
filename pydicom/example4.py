@@ -18,5 +18,5 @@ def grayscale(colored_img):
 
 
 ds = pydicom.read_file("pydicom/image1.dcm")
-img1 = Image.fromarray(ds.pixel_array)
+img1 = Image.fromarray(ds.pixel_array.astype("uint8"))
 show_side_by_side(img1, grayscale(img1))
