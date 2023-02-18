@@ -15,6 +15,9 @@ plotly = "*"
 pydicom = "*"
 pillow = "*"
 pylibjpeg = "*"
+ipywidgets = "*"
+chart-studio = "*"
+tk = "*"
 
 [dev-packages]
 ipykernel = "*"
