@@ -1,12 +1,6 @@
 import numpy as np
 import pydicom
-
-import matplotlib
 import matplotlib.pyplot as plt
-
-
-# set the backend
-matplotlib.use("TkAgg")
 
 
 with pydicom.dcmread("pydicom/image5.dcm") as ds:
