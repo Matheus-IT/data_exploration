@@ -18,6 +18,7 @@ pylibjpeg = "*"
 ipywidgets = "*"
 chart-studio = "*"
 tk = "*"
+opencv-python = "*"
 
 [dev-packages]
 ipykernel = "*"
