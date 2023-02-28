@@ -19,8 +19,14 @@ image = cv2.normalize(pixel_data, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8UC1)
 threshold = 128
 binary_image = image > threshold
 
+# Convert binary image to cv::UMat object
+binary_image = cv2.UMat(binary_image.astype(np.uint8))
+
 # Label the connected components in the binary image
-labels, num_labels = scipy.ndimage.label(binary_image)
+num_connected_components, labels = cv2.connectedComponents(binary_image)
+
+# Convert labels to numpy array
+labels = labels.get()
 
 # plotting image
 f = plt.figure()
