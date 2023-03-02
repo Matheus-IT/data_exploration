@@ -16,7 +16,6 @@ img = cv2.normalize(pixel_data, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8UC1)
 # Resize image, or else it will be displayed too large
 img = cv2.resize(img, (0, 0), fx=0.2, fy=0.2)
 
-
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 # Reshaping the image into a 2D array of pixels and 3 color values (RGB)

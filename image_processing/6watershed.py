@@ -34,5 +34,16 @@ markers = markers + 1
 # Now, mark the region of unknown with zero
 markers[unknown == 255] = 0
 
+# Replicate single-channel image into three channels
+img = cv.cvtColor(img, cv.COLOR_GRAY2RGB)
+
 markers = cv.watershed(img, markers)
 img[markers == -1] = [255, 0, 0]
+
+# Resize image, or else it will be displayed too large
+img = cv.resize(img, (0, 0), fx=0.2, fy=0.2)
+
+# Mostrar o resultado
+cv.imshow("Resultado", img)
+cv.waitKey(0)
+cv.destroyAllWindows()
