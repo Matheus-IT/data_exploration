@@ -3,7 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 
 # Carregar imagem
-ds = pydicom.dcmread("image_processing/images/mammography_modified.dcm")
+ds = pydicom.dcmread("image_processing/images/mammography.dcm")
 
 # Get pixel data and metadata
 pixel_data = ds.pixel_array
