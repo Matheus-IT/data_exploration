@@ -1,39 +1,38 @@
 import numpy as np
-import cv2 as cv
-from matplotlib import pyplot as plt
 import pydicom
+from PIL import Image, ImageDraw
 
 
-# Carregar imagem
+# Read the original dicom file
 ds = pydicom.dcmread("image_processing/images/mammography.dcm")
 
-# Get pixel data and metadata
-pixel_data = ds.pixel_array
+# Copy the original dicom file
+ds_copy = ds.copy()
 
-# Convert pixel data to 8-bit integer
-img = cv.normalize(pixel_data, None, 0, 255, cv.NORM_MINMAX, cv.CV_8UC1)
+# Get the pixel array of the image
+img = ds_copy.pixel_array
 
-# Make a rectangle
-cv.rectangle(img, (1000, 1000), (1500, 1500), 255, 10)
+# Convert the pixel array to a PIL image
+img = Image.fromarray(img)
 
-# Creating a new DICOM object to hold the modified image
-new_image_ds = pydicom.Dataset()
-new_image_ds.PixelData = img.tobytes()
-new_image_ds.Rows, new_image_ds.Columns = img.shape
-# Setting some attributes based on the existing image
-new_image_ds.ImagePositionPatient = ds[0].ImagePositionPatient
-new_image_ds.ImageOrientationPatient = ds[0].ImageOrientationPatient
-new_image_ds.PixelSpacing = ds[0].PixelSpacing
+# Draw a square on the image using PIL
+draw = ImageDraw.Draw(img)
+draw.rectangle(
+    [100, 100, 200, 200],  # Top-left and bottom-right coordinates of the square
+    outline="red",
+)
 
-# Add the new image to the series
-new_image_ds.SeriesInstanceUID = ds.SeriesInstanceUID
-new_image_ds.SOPInstanceUID = pydicom.uid.generate_uid()
-new_image_ds.ReferencedSOPInstanceUID = [ds[0].SOPInstanceUID]
-ds.ReferencedSOPInstanceUID.append(new_image_ds.SOPInstanceUID)
+# Convert the PIL image back to a pixel array
+img = np.array(img)
 
+# Update the pixel array of the copy with the modified image
+ds_copy.PixelData = img.tobytes()
+ds_copy.Rows, ds_copy.Columns = img.shape
 
-plt.imshow(img, cmap="bone")
-plt.show()
+# Increment the instance number by one for the copy
+ds_copy.InstanceNumber += 1
+# Generate a new SOP Instance UID for the second file
+ds_copy.SOPInstanceUID = pydicom.uid.generate_uid()
 
-ds.save_as("image_processing/images/mammography.dcm")
-new_image_ds.save_as("image_processing/images/mammography_modified.dcm")
+# Save the modified dicom file as a new file name
+ds_copy.save_as("image_processing/images/mammography_modified.dcm")
