@@ -4,6 +4,8 @@ import pydicom
 from pydicom.pixel_data_handlers.util import apply_voi_lut
 import cv2 as cv
 from utils.presentation import show_pixel_info, show_pixel_array_info
+from utils.image_normalization import normalize, denormalize
+from icecream import ic
 
 
 # Read the original dicom file
@@ -15,15 +17,18 @@ ds_copy = ds.copy()
 # Get the pixel array of the image
 img = ds_copy.pixel_array
 
-show_pixel_array_info(img)
+# Store min and max values of original image
+min_val = np.min(img)
+max_val = np.max(img)
 
 # Normalizing the image
-img = cv.normalize(img, None, 0, 255, cv.NORM_MINMAX)  # type: ignore
-
-show_pixel_array_info(img)
+img = normalize(img)
 
 # Draw a square on the image
 cv.rectangle(img, (500, 500), (1000, 1000), color=255, thickness=20)
+
+# Denormalize image using inverse formula
+img = denormalize(img, min_val, max_val)
 
 # Update the pixel array of the copy with the modified image
 ds_copy.PixelData = img.tobytes()
