@@ -1,4 +1,4 @@
-import pydicom
+import numpy as np
 from pydicom import FileDataset
 
 
@@ -90,4 +90,15 @@ def show_file_dataset_info(ds: FileDataset):
     print("ds.default_sequence_element_format", ds.default_sequence_element_format)
     print("ds.indent_chars", ds.indent_chars)
     print("ds.is_original_encoding", ds.is_original_encoding)
+    draw_line()
+
+
+def show_pixel_array_info(pixel_array: np.ndarray):
+    draw_line()
+    print("data", pixel_array.data)
+    print("dtype", pixel_array.dtype)
+    print("flags", pixel_array.flags)
+    print("itemsize", pixel_array.itemsize)
+    print("ndim", pixel_array.ndim)
+    print("shape", pixel_array.shape)
     draw_line()
