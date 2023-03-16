@@ -17,7 +17,7 @@ def p_dicom(ds: FileDataset, field: str):
 
     if ds.get(field) is not None:
         print(
-            f"{field}: {ds.get(field) if isinstance(ds.get(field), (int, float)) else ds.get(field).value}"
+            f"{field}: {ds.get(field) if isinstance(ds.get(field), (int, float, str)) else ds.get(field).value}"
         )
     else:
         print(f"{field}: None")
@@ -58,6 +58,8 @@ def compare(ds1: FileDataset, ds2: FileDataset):
 
 def show_pixel_info(ds: FileDataset):
     draw_line()
+    p_dicom(ds, "PhotometricInterpretation")
+    p_dicom(ds, "SamplesPerPixel")
     p_dicom(ds, "BitsAllocated")
     p_dicom(ds, "BitsStored")
     p_dicom(ds, "HighBit")
@@ -99,6 +101,7 @@ def show_pixel_array_info(pixel_array: np.ndarray):
     print("dtype", pixel_array.dtype)
     print("flags", pixel_array.flags)
     print("itemsize", pixel_array.itemsize)
+    print("size", pixel_array.size)
     print("ndim", pixel_array.ndim)
     print("shape", pixel_array.shape)
     draw_line()
