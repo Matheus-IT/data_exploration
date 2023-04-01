@@ -10,7 +10,7 @@ def normalize(arr: np.ndarray, min_val: int = 0, max_val: int = 255):
 
     __last_normalize_min_val = min_val
     __last_normalize_max_val = max_val
-    return cv.normalize(arr, None, min_val, max_val, cv.NORM_MINMAX)  # type: ignore
+    return cv.normalize(arr, None, min_val, max_val, cv.NORM_MINMAX, cv.CV_8UC1)  # type: ignore
 
 
 def denormalize(arr: np.ndarray, min_val: int, max_val: int):
