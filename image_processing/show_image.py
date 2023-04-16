@@ -9,39 +9,51 @@ from utils.presentation import (
 )
 import cv2 as cv
 from utils.image_normalization import normalize, denormalize
+from icecream import ic
+import numpy as np
+from timeit import default_timer as timer
 
 
-img_path = "image_processing/images/mammography.dcm"
-ds = pydicom.dcmread(img_path)
+ds = pydicom.dcmread(
+    "image_processing/images/dicom/ex1/DICOM/09266278/7CF888A1/73F2A227.dcm"
+)
 
 # Get pixel data and metadata
 img = ds.pixel_array
 
-# Convert pixel data to 8-bit integer
-img = normalize(img, 0, 255)
+img = normalize(img)
 
-x, y, w, h = 300, 200, 600, 400  # simply hardcoded the values
-track_window = (x, y, w, h)
 
-roi = img[x:w, y:h]
-# Setup the termination criteria, either 10 iteration or move by at least 1 pt
-term_crit = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1)
-roi_hist = cv.calcHist([roi], [0], None, [180], [0, 180])
-dst = cv.calcBackProject([roi], [0], roi_hist, [0, 180], 1)
+# img = cv.resize(img, (0, 0), fx=0.15, fy=0.15)
 
-ret, track_window = cv.meanShift(dst, track_window, term_crit)
+# # Reshaping the image into a 2D array of pixels and 3 color values (RGB)
+# pixel_vals = img.reshape((-1, 1))
 
-# Draw it on image
-x, y, w, h = track_window
-img2 = cv.rectangle(img, (x, y), (x + w, y + h), 255, 2)
+# # Convert to float type only for supporting cv2.kmean
+# pixel_vals = np.float32(pixel_vals)
 
-# img2 = denormalize(img2, 0, 255)
-# img = denormalize(img, 0, 255)
+# criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 100, 0.85)
+# k = 5  # Choosing number of cluster
+# retval, labels, centers = cv.kmeans(
+#     pixel_vals, k, None, criteria, 10, cv.KMEANS_PP_CENTERS
+# )
 
-img2 = cv.resize(img2, None, fx=0.1, fy=0.1)
-img = cv.resize(img, None, fx=0.1, fy=0.1)
+# centers = np.array(centers, dtype=np.uint8)
 
-images = cv.hconcat([img, img2])
-cv.imshow("images", images)
-cv.waitKey(0)
-cv.destroyAllWindows()
+# labels[(labels != centers.argmin() + 1)] = 1
+
+# # Mapping labels to center points
+# segmented_data = centers[labels.flatten()]
+
+# # reshape data into the original image dimensions
+# segmented_image = segmented_data.reshape((img.shape))
+
+# denormalize(img)
+
+segmented_image = img.copy()
+segmented_image[segmented_image >= 248] = 0
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+ax1.imshow(img, cmap="gray")
+ax2.imshow(segmented_image, cmap="gray")
+plt.show()
