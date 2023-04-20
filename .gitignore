@@ -135,7 +135,7 @@ dmypy.json
 *.db
 
 # ignoring vscode
-./vscode
+.vscode/
 
 # ignoring dicom files
 *.dcm
