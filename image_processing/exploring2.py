@@ -23,6 +23,8 @@ img = ds.pixel_array
 
 img = normalize(img)
 
+plt.hist(img.flatten())
+plt.show()
 
 # img = cv.resize(img, (0, 0), fx=0.15, fy=0.15)
 
@@ -50,10 +52,10 @@ img = normalize(img)
 
 # denormalize(img)
 
-segmented_image = img.copy()
-segmented_image[segmented_image >= 248] = 0
+# segmented_image = img.copy()
+# segmented_image[segmented_image >= 248] = 0
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-ax1.imshow(img, cmap="gray")
-ax2.imshow(segmented_image, cmap="gray")
-plt.show()
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+# ax1.imshow(img, cmap="gray")
+# ax2.imshow(segmented_image, cmap="gray")
+# plt.show()

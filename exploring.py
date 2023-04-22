@@ -1,6 +1,8 @@
-t = input()
-answers = input().split(" ")
+import numpy as np
 
-right_answers = [a for a in answers if a == t]
+my_matrix = np.arange(27).reshape(3, 3, 3)
 
-print(len(right_answers))
+print(my_matrix)
+print(my_matrix.sum(axis=0))
+print(my_matrix.prod(axis=1))
+print(my_matrix.mean(axis=2))
