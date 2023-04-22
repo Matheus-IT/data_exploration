@@ -1,5 +1,7 @@
 import numpy as np
 from pydicom import FileDataset
+import matplotlib.pyplot as plt
+from PIL import Image, ImageFilter
 
 
 draw_line = lambda: print("=" * 50)
@@ -105,3 +107,24 @@ def show_pixel_array_info(pixel_array: np.ndarray):
     print("ndim", pixel_array.ndim)
     print("shape", pixel_array.shape)
     draw_line()
+
+
+def compare_image_filter(img: Image, operation: callable, gray=False):
+    fig = plt.figure(figsize=(8, 5))
+    fig.add_subplot(1, 2, 1)
+
+    if gray:
+        plt.imshow(img, cmap="gray")
+    else:
+        plt.imshow(img)
+    plt.title("Original")
+
+    fig.add_subplot(1, 2, 2)
+
+    filtered = operation(img)
+    if gray:
+        plt.imshow(filtered, cmap="gray")
+    else:
+        plt.imshow(filtered)
+    plt.title("Filtered")
+    plt.show()

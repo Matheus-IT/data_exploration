@@ -32,7 +32,7 @@ retval, labels, centers = cv.kmeans(
 
 centers = np.array(centers, dtype=np.uint8)
 
-# labels[(labels != centers.argmax())] = 0
+labels[(labels != centers.argmax())] = 0
 
 # Mapping labels to center points
 segmented_data = centers[labels.flatten()]
