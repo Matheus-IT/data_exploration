@@ -128,3 +128,4 @@ def compare_image_filter(img: Image, operation: callable, gray=False):
         plt.imshow(filtered)
     plt.title("Filtered")
     plt.show()
+    return filtered
