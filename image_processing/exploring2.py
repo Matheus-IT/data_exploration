@@ -22,12 +22,41 @@ with Timer():
     modified = original.copy()
     modified = modified.filter(ImageFilter.SMOOTH)
     # thresholding
-    modified = modified.point(lambda x: 255 if x > 180 else 0)
+    # modified = modified.point(lambda x: 255 if x > 180 else 0)
+    # Reshaping the image into a 2D array of pixels and 3 color values (RGB)
+    pixel_vals = np.array(modified).reshape((-1, 1))
+
+    # Convert to float type only for supporting cv2.kmean
+    pixel_vals = np.float32(pixel_vals)
+
+    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 100, 0.85)
+    k = 5  # Choosing number of cluster
+    retval, labels, centers = cv.kmeans(
+        pixel_vals, k, None, criteria, 10, cv.KMEANS_PP_CENTERS
+    )
+
+    centers = np.array(centers, dtype=np.uint8)
+
+    labels[labels != centers.argmax()] = 0
+
+    # Mapping labels to center points
+    segmented_data = centers[labels.flatten()]
+
+    # reshape data into the original image dimensions
+    modified = segmented_data.reshape((np.array(modified).shape))
+
+    modified[modified != 0] = 255
+
+    plt.imshow(modified, cmap="gray")
+    plt.show()
+
+    modified = Image.fromarray(modified)
+
     # erosion
-    for _ in range(6):
+    for _ in range(7):
         modified = modified.filter(ImageFilter.MinFilter)
     # dilation
-    for _ in range(6):
+    for _ in range(7):
         modified = modified.filter(ImageFilter.MaxFilter)
 
     original = np.asarray(original)
@@ -52,5 +81,5 @@ with Timer():
     # Draw the red square on the image
     cv.rectangle(original, top_left, bottom_right, (0, 0, 255), 2)
 
-    plt.imshow(original, cmap="gray")
-    plt.show()
+    # plt.imshow(original, cmap="gray")
+    # plt.show()
