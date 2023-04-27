@@ -11,56 +11,56 @@ import cv2 as cv
 from utils.image_normalization import normalize, denormalize
 from icecream import ic
 import numpy as np
-from PIL import Image, ImageFilter
-from utils.presentation import compare_image_filter
 from utils.elapsed_time import Timer
 
 
 with Timer():
-    original = Image.open("image_processing/images/mammography.png").convert("L")
+    # reading image
+    original = cv.imread("image_processing/images/mammography.png")
+    original = cv.cvtColor(original, cv.COLOR_BGRA2GRAY)
+
     # smoothing
     modified = original.copy()
-    modified = modified.filter(ImageFilter.SMOOTH)
-    # thresholding
-    # modified = modified.point(lambda x: 255 if x > 180 else 0)
+    kernel_size = (5, 5)
+    modified = cv.GaussianBlur(modified, kernel_size, 0)
+
     # Reshaping the image into a 2D array of pixels and 3 color values (RGB)
-    pixel_vals = np.array(modified).reshape((-1, 1))
+    # Convert to float type only for supporting cv.kmeans
+    pixel_vals = modified.flatten().astype(np.float32)
 
-    # Convert to float type only for supporting cv2.kmean
-    pixel_vals = np.float32(pixel_vals)
-
-    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 100, 0.85)
-    k = 5  # Choosing number of cluster
+    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+    k = 3  # Choosing number of clusters
     retval, labels, centers = cv.kmeans(
         pixel_vals, k, None, criteria, 10, cv.KMEANS_PP_CENTERS
     )
 
-    centers = np.array(centers, dtype=np.uint8)
+    # centers = np.array(centers, dtype=np.uint8)
 
-    labels[labels != centers.argmax()] = 0
+    # Find the cluster with the highest intensity value
+    centers_max = np.max(centers, axis=1)
+    highest_intensity_cluster_idx = np.argsort(centers_max)[-1]
 
-    # Mapping labels to center points
-    segmented_data = centers[labels.flatten()]
+    # Extract the pixels belonging to the highest intensity cluster
+    highest_intensity_pixels = pixel_vals[
+        np.where(labels == highest_intensity_cluster_idx)[0]
+    ]
 
-    # reshape data into the original image dimensions
-    modified = segmented_data.reshape((np.array(modified).shape))
+    # Create a new image containing just the higher intensity pixels
+    img_high_intensity = np.zeros_like(pixel_vals)
+    img_high_intensity[
+        np.where(labels == highest_intensity_cluster_idx)[0]
+    ] = highest_intensity_pixels
+    img_high_intensity = img_high_intensity.reshape(modified.shape)
 
-    modified[modified != 0] = 255
-
-    plt.imshow(modified, cmap="gray")
-    plt.show()
-
-    modified = Image.fromarray(modified)
+    # Convert the new image to binary
+    ret, modified = cv.threshold(img_high_intensity, 0, 255, cv.THRESH_BINARY)
 
     # erosion
-    for _ in range(7):
-        modified = modified.filter(ImageFilter.MinFilter)
+    modified = cv.erode(modified, None, iterations=12)
     # dilation
-    for _ in range(7):
-        modified = modified.filter(ImageFilter.MaxFilter)
+    modified = cv.dilate(modified, None, iterations=12)
 
-    original = np.asarray(original)
-    modified = np.asarray(modified)
+    modified = modified.astype(np.uint8)
 
     template = cv.bitwise_and(original, original, mask=modified)
 
@@ -81,5 +81,5 @@ with Timer():
     # Draw the red square on the image
     cv.rectangle(original, top_left, bottom_right, (0, 0, 255), 2)
 
-    # plt.imshow(original, cmap="gray")
-    # plt.show()
+    plt.imshow(original, cmap="gray")
+    plt.show()
