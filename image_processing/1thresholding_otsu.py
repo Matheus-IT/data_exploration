@@ -11,7 +11,7 @@ import pydicom
 
 
 # Carregar imagem
-ds = pydicom.dcmread("image_processing/images/mammography.dcm")
+ds = pydicom.dcmread("image_processing/images/dicom/mammography.dcm")
 
 # Get pixel data and metadata
 pixel_data = ds.pixel_array
