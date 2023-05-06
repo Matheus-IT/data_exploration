@@ -12,6 +12,7 @@ from utils.image_normalization import normalize, denormalize
 from icecream import ic
 import numpy as np
 from utils.elapsed_time import Timer
+from PIL import Image
 
 
 with Timer():
@@ -34,14 +35,18 @@ with Timer():
     modified = cv.GaussianBlur(modified, kernel_size, 0)
 
     # Convert the new image to binary
-    ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_OTSU)
+    # ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_OTSU)
+    modified = cv.adaptiveThreshold(
+        modified, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 17, 3
+    )
 
     # erosion
-    modified = cv.erode(modified, None, iterations=10)
+    # modified = cv.erode(modified, None, iterations=10)
     # dilation
-    modified = cv.dilate(modified, None, iterations=10)
+    # modified = cv.dilate(modified, None, iterations=10)
 
     # modified = cv.bitwise_and(original, original, mask=modified)
 
-    plt.imshow(modified, cmap="gray")
-    plt.show()
+    # plt.imshow(modified, cmap="gray")
+    # plt.show()
+    Image.fromarray(modified).show()
