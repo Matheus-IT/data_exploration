@@ -35,10 +35,14 @@ with Timer():
     modified = cv.GaussianBlur(modified, kernel_size, 0)
 
     # Convert the new image to binary
+    # ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_BINARY)
     # ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_OTSU)
-    modified = cv.adaptiveThreshold(
-        modified, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 17, 3
-    )
+    # modified = cv.adaptiveThreshold(
+    #     modified, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 17, 3
+    # )
+    kernel = cv.getStructuringElement(cv.MORPH_RECT, kernel_size)
+    modified = cv.morphologyEx(modified, cv.MORPH_TOPHAT, kernel)
+    modified = cv.morphologyEx(modified, cv.MORPH_BLACKHAT, kernel)
 
     # erosion
     # modified = cv.erode(modified, None, iterations=10)
