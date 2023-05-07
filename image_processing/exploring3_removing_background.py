@@ -19,6 +19,7 @@ with Timer():
     # reading image
     original = cv.imread("image_processing/images/mammography2.png")
     original = cv.cvtColor(original, cv.COLOR_BGRA2GRAY)
+    h, w = original.shape
     # original = cv.flip(original, 1)
     modified = original.copy()
 
@@ -35,22 +36,34 @@ with Timer():
     modified = cv.GaussianBlur(modified, kernel_size, 0)
 
     # Convert the new image to binary
-    # ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_BINARY)
-    # ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_OTSU)
+    ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_OTSU)
+
+    # opening morphological operation
+    modified = cv.erode(modified, None, iterations=10)
+    modified = cv.dilate(modified, None, iterations=10)
+
+    # dilate mask to fill in the gaps
+    modified = cv.dilate(modified, None, iterations=10)
+
+    # get largest contour
+    contours = cv.findContours(modified, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    contours = contours[0] if len(contours) == 2 else contours[1]
+    big_contour = max(contours, key=cv.contourArea)
+
+    # draw largest contour as white filled on black background as mask
+    mask = np.zeros((h, w), dtype=np.uint8)
+    cv.drawContours(mask, [big_contour], 0, 255, cv.FILLED)
+
+    # trying adaptive threshold
     # modified = cv.adaptiveThreshold(
     #     modified, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 17, 3
     # )
-    kernel = cv.getStructuringElement(cv.MORPH_RECT, kernel_size)
-    modified = cv.morphologyEx(modified, cv.MORPH_TOPHAT, kernel)
-    modified = cv.morphologyEx(modified, cv.MORPH_BLACKHAT, kernel)
 
-    # erosion
-    # modified = cv.erode(modified, None, iterations=10)
-    # dilation
-    # modified = cv.dilate(modified, None, iterations=10)
+    # trying out some morphological operations
+    # kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
+    # modified = cv.morphologyEx(modified, cv.MORPH_TOPHAT, kernel)
+    # modified = cv.morphologyEx(modified, cv.MORPH_BLACKHAT, kernel)
 
-    # modified = cv.bitwise_and(original, original, mask=modified)
+    modified = cv.bitwise_and(original, original, mask=mask)
 
-    # plt.imshow(modified, cmap="gray")
-    # plt.show()
     Image.fromarray(modified).show()
