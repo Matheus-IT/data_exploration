@@ -20,17 +20,7 @@ with Timer():
     original = cv.imread("image_processing/images/mammography2.png")
     original = cv.cvtColor(original, cv.COLOR_BGRA2GRAY)
     h, w = original.shape
-    # original = cv.flip(original, 1)
     modified = original.copy()
-
-    # # bottom right corner
-    # x1 = int(0.9 * original.shape[0])
-    # y1 = int(0.99 * original.shape[1])
-    # # top right corner
-    # x2 = int(0.9 * original.shape[0])
-    # y2 = int(0.1 * original.shape[1])
-
-    # thresh = (original[x1, y1] + original[x2, y2]) // 2
 
     kernel_size = (5, 5)
     modified = cv.GaussianBlur(modified, kernel_size, 0)
@@ -53,16 +43,6 @@ with Timer():
     # draw largest contour as white filled on black background as mask
     mask = np.zeros((h, w), dtype=np.uint8)
     cv.drawContours(mask, [big_contour], 0, 255, cv.FILLED)
-
-    # trying adaptive threshold
-    # modified = cv.adaptiveThreshold(
-    #     modified, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 17, 3
-    # )
-
-    # trying out some morphological operations
-    # kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
-    # modified = cv.morphologyEx(modified, cv.MORPH_TOPHAT, kernel)
-    # modified = cv.morphologyEx(modified, cv.MORPH_BLACKHAT, kernel)
 
     modified = cv.bitwise_and(original, original, mask=mask)
 
