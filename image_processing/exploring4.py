@@ -59,31 +59,44 @@ with Timer():
 
     criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 10, 1.0)
     k = 5  # Choosing number of clusters
-    retval, labels, centers = cv.kmeans(
+    compactness, labels, centers = cv.kmeans(
         pixel_vals, k, None, criteria, 10, cv.KMEANS_PP_CENTERS
     )
 
-    centers = np.array(centers, dtype=np.uint8)
+    centers = np.uint8(centers)
 
-    ic(np.unique(labels))
+    # Reshape the labels to match the image shape
+    labels = labels.flatten()
+
+    # Retrieve the segmented image by assigning each pixel to its corresponding cluster center
+    segmented_image = centers[labels]
+
+    # Reshape the segmented image to the original image shape
+    segmented_image = segmented_image.reshape(original.shape)
+
+    ic(labels)
     ic(centers)
-    ic(retval)
+    ic(compactness)
 
-    # Find the cluster with the highest intensity value
-    centers_max = np.max(centers, axis=1)
-    highest_intensity_cluster_idx = np.argsort(centers_max)[-1]
+    Image.fromarray(segmented_image).show()
 
-    # Extract the pixels belonging to the highest intensity cluster
-    highest_intensity_pixels = pixel_vals[
-        np.where(labels == highest_intensity_cluster_idx)[0]
-    ]
+    exit()
 
-    # Create a new image containing just the higher intensity pixels
-    img_high_intensity = np.zeros_like(pixel_vals)
-    img_high_intensity[
-        np.where(labels == highest_intensity_cluster_idx)[0]
-    ] = highest_intensity_pixels
-    img_high_intensity = img_high_intensity.reshape(modified.shape)
+    # # Find the cluster with the highest intensity value
+    # centers_max = np.max(centers, axis=1)
+    # highest_intensity_cluster_idx = np.argsort(centers_max)[-1]
+
+    # # Extract the pixels belonging to the highest intensity cluster
+    # highest_intensity_pixels = pixel_vals[
+    #     np.where(labels == highest_intensity_cluster_idx)[0]
+    # ]
+
+    # # Create a new image containing just the higher intensity pixels
+    # img_high_intensity = np.zeros_like(pixel_vals)
+    # img_high_intensity[
+    #     np.where(labels == highest_intensity_cluster_idx)[0]
+    # ] = highest_intensity_pixels
+    # img_high_intensity = img_high_intensity.reshape(modified.shape)
 
     # Convert the new image to binary
     ret, modified = cv.threshold(img_high_intensity, 0, 255, cv.THRESH_BINARY)
