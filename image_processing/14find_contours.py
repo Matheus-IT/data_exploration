@@ -31,8 +31,7 @@ with Timer():
     contours, hierarchy = cv.findContours(
         modified, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE
     )
-    modified = cv.drawContours(original, contours, -1, (255, 0, 0), 2)
-    # largest_contour = max(contours[0], key=cv.contourArea)
-    # modified = cv.drawContours(original, [largest_contour], -1, (255, 0, 0), 2)
+    largest_contour = max(contours, key=cv.contourArea)
+    modified = cv.drawContours(original, [largest_contour], -1, (255, 0, 0), 2)
 
     Image.fromarray(modified).show()

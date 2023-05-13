@@ -16,15 +16,14 @@ from PIL import Image
 
 
 with Timer():
-    # reading image
-    original = pydicom.dcmread(
-        "image_processing/images/dicom/mammography2.dcm"
-    ).pixel_array
+    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography_datasets/nbia/manifest-1616439774456/CMMD/D1-1042/07-18-2011-NA-NA-47524/1.000000-NA-03751/"
+    original = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm").pixel_array
 
-    modified = normalize(original)
+    modified = original.copy()
 
-    h, w = modified.shape
-    modified = modified.copy()
+    modified = np.uint8(modified)
+
+    height, width = modified.shape
 
     kernel_size = (5, 5)
     modified = cv.GaussianBlur(modified, kernel_size, 0)
@@ -35,7 +34,6 @@ with Timer():
     # opening morphological operation
     modified = cv.erode(modified, None, iterations=10)
     modified = cv.dilate(modified, None, iterations=10)
-
     # dilate mask to fill in the gaps
     modified = cv.dilate(modified, None, iterations=10)
 
@@ -45,12 +43,12 @@ with Timer():
     big_contour = max(contours, key=cv.contourArea)
 
     # draw largest contour as white filled on black background as mask
-    mask = np.zeros((h, w), dtype=np.uint8)
+    mask = np.zeros((height, width), dtype=np.uint8)
     cv.drawContours(mask, [big_contour], 0, 255, cv.FILLED)
 
     modified = cv.bitwise_and(original, original, mask=mask)
 
-    kernel_size = (7, 7)
+    kernel_size = (5, 5)
     modified = cv.GaussianBlur(modified, kernel_size, 0)
 
     # Reshaping the image into a 2D array of pixels and 3 color values (RGB)
@@ -58,7 +56,7 @@ with Timer():
     pixel_vals = modified.flatten().astype(np.float32)
 
     criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    k = 5  # Choosing number of clusters
+    k = 4  # Choosing number of clusters
     compactness, labels, centers = cv.kmeans(
         pixel_vals, k, None, criteria, 10, cv.KMEANS_PP_CENTERS
     )
@@ -74,29 +72,23 @@ with Timer():
     # Reshape the segmented image to the original image shape
     segmented_image = segmented_image.reshape(original.shape)
 
-    ic(labels)
-    ic(centers)
-    ic(compactness)
+    # Find the cluster with the highest intensity value
+    centers_max = np.max(centers, axis=1)
+    highest_intensity_cluster_idx = np.argsort(centers_max)[-1]
 
-    Image.fromarray(segmented_image).show()
+    # Extract the pixels belonging to the highest intensity cluster
+    highest_intensity_pixels = pixel_vals[
+        np.where(labels == highest_intensity_cluster_idx)[0]
+    ]
 
-    exit()
+    # Create a new image containing just the higher intensity pixels
+    img_high_intensity = np.zeros_like(pixel_vals)
+    img_high_intensity[
+        np.where(labels == highest_intensity_cluster_idx)[0]
+    ] = highest_intensity_pixels
+    img_high_intensity = img_high_intensity.reshape(modified.shape)
 
-    # # Find the cluster with the highest intensity value
-    # centers_max = np.max(centers, axis=1)
-    # highest_intensity_cluster_idx = np.argsort(centers_max)[-1]
-
-    # # Extract the pixels belonging to the highest intensity cluster
-    # highest_intensity_pixels = pixel_vals[
-    #     np.where(labels == highest_intensity_cluster_idx)[0]
-    # ]
-
-    # # Create a new image containing just the higher intensity pixels
-    # img_high_intensity = np.zeros_like(pixel_vals)
-    # img_high_intensity[
-    #     np.where(labels == highest_intensity_cluster_idx)[0]
-    # ] = highest_intensity_pixels
-    # img_high_intensity = img_high_intensity.reshape(modified.shape)
+    Image.fromarray(img_high_intensity).show()
 
     # Convert the new image to binary
     ret, modified = cv.threshold(img_high_intensity, 0, 255, cv.THRESH_BINARY)
@@ -109,8 +101,8 @@ with Timer():
     template = cv.bitwise_and(original, original, mask=modified)
 
     # Extract the sub image from the masked image
-    x, y, w, h = cv.boundingRect(modified)
-    subimg = template[y : y + h, x : x + w]
+    x, y, width, height = cv.boundingRect(modified)
+    subimg = template[y : y + height, x : x + width]
 
     # Apply template matching
     result = cv.matchTemplate(original, subimg, cv.TM_CCOEFF_NORMED)
@@ -127,5 +119,4 @@ with Timer():
     # Draw the red square on the image
     cv.rectangle(original, top_left, bottom_right, (0, 0, 255), 2)
 
-    plt.imshow(original, cmap="gray")
-    plt.show()
+    Image.fromarray(original).show()
