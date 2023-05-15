@@ -36,8 +36,9 @@ with Timer():
     modified = cv.dilate(modified, None, iterations=10)
 
     # get largest contour
-    contours = cv.findContours(modified, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    contours = contours[0] if len(contours) == 2 else contours[1]
+    contours, hierarchy = cv.findContours(
+        modified, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE
+    )
     big_contour = max(contours, key=cv.contourArea)
 
     # draw largest contour as white filled on black background as mask
