@@ -31,12 +31,6 @@ with Timer():
     # Convert the new image to binary
     ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_OTSU)
 
-    # opening morphological operation
-    modified = cv.erode(modified, None, iterations=10)
-    modified = cv.dilate(modified, None, iterations=10)
-    # dilate mask to fill in the gaps
-    modified = cv.dilate(modified, None, iterations=10)
-
     # get largest contour
     contours, hierarchy = cv.findContours(
         modified, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE
@@ -89,8 +83,6 @@ with Timer():
     ] = highest_intensity_pixels
     img_high_intensity = img_high_intensity.reshape(modified.shape)
 
-    Image.fromarray(img_high_intensity).show()
-
     # Convert the new image to binary
     ret, modified = cv.threshold(img_high_intensity, 0, 255, cv.THRESH_BINARY)
 
@@ -118,6 +110,6 @@ with Timer():
     original = cv.cvtColor(original, cv.COLOR_GRAY2BGR)
 
     # Draw the red square on the image
-    cv.rectangle(original, top_left, bottom_right, (0, 0, 255), 2)
+    cv.rectangle(original, top_left, bottom_right, (255, 0, 0), 3)
 
     Image.fromarray(original).show()
