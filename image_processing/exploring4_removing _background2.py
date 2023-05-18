@@ -21,7 +21,7 @@ with Timer():
 
     modified = original.copy()
 
-    modified = np.uint8(modified)
+    modified = normalize(modified)
 
     height, width = modified.shape
 
