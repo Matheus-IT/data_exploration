@@ -51,7 +51,7 @@ with Timer():
     pixel_vals = modified.flatten().astype(np.float32)
 
     criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    k = 4  # Choosing number of clusters
+    k = 3  # Choosing number of clusters
     compactness, labels, centers = cv.kmeans(
         pixel_vals, k, None, criteria, 10, cv.KMEANS_PP_CENTERS
     )
