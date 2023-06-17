@@ -20,3 +20,5 @@ with Timer():
     original = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm").pixel_array
 
     Image.fromarray(original).show()
+
+    print("hello")
