@@ -18,4 +18,5 @@ import pydicom
 with Timer():
     MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography_datasets/nbia/manifest-1616439774456/CMMD/D1-1042/07-18-2011-NA-NA-47524/1.000000-NA-03751/"
     original = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm").pixel_array
+
     Image.fromarray(original).show()
