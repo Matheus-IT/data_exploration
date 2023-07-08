@@ -15,6 +15,15 @@ from utils.elapsed_time import Timer
 from PIL import Image
 
 
+def show_side_by_side(image1, image2):
+    new_image = Image.new("RGB", (image1.width + image2.width, image1.height))
+
+    # Paste the images at (0,0) and (image1.width, 0) respectively
+    new_image.paste(image1, (0, 0))
+    new_image.paste(image2, (image1.width, 0))
+    new_image.show()
+
+
 with Timer():
     # reading image
     original = cv.imread("image_processing/images/mammography2.png")
@@ -22,7 +31,9 @@ with Timer():
     h, w = original.shape
     modified = original.copy()
 
-    kernel_size = (5, 5)
+    modified = normalize(modified)
+
+    kernel_size = (9, 9)
     modified = cv.GaussianBlur(modified, kernel_size, 0)
 
     # Convert the new image to binary
@@ -47,4 +58,7 @@ with Timer():
 
     modified = cv.bitwise_and(original, original, mask=mask)
 
-    Image.fromarray(modified).show()
+    show_side_by_side(
+        Image.fromarray(original),
+        Image.fromarray(modified),
+    )
