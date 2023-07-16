@@ -10,7 +10,7 @@ data = {
 
 df = pd.DataFrame(data)
 
-sns.lineplot(x="Year", y="Documents", data=df)
+sns.lineplot(x="Year", y="Documents", data=df, markers=True, markersize=10)
 
 plt.xlabel("Ano")
 plt.ylabel("Documentos")
