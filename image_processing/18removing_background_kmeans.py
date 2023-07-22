@@ -6,6 +6,7 @@ from utils.presentation import (
     show_voi_lut_module,
     show_file_dataset_info,
     show_pixel_array_info,
+    display_side_by_side,
 )
 import cv2 as cv
 from utils.image_normalization import normalize, denormalize
@@ -16,7 +17,7 @@ from PIL import Image
 
 
 with Timer():
-    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/nbia/CMMD/D1-0001/07-18-2010-NA-NA-79377/1.000000-NA-70244/"
+    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/nbia/CMMD/D2-0001/07-18-2011-NA-NA-75485/1.000000-NA-12786/"
     original = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm").pixel_array
 
     modified = original.copy()
@@ -89,27 +90,17 @@ with Timer():
     modified = cv.erode(modified, None, iterations=5)
     modified = cv.dilate(modified, None, iterations=5)
 
+    # mark roi with colormap
     modified = modified.astype(np.uint8)
 
-    template = cv.bitwise_and(original, original, mask=modified)
+    roi = cv.bitwise_and(original, original, mask=modified)
 
-    # Extract the sub image from the masked image
-    x, y, width, height = cv.boundingRect(modified)
-    subimg = template[y : y + height, x : x + width]
-
-    # Apply template matching
-    result = cv.matchTemplate(original, subimg, cv.TM_CCOEFF_NORMED)
-
-    # Get the location of the template
-    min_val, max_val, min_loc, max_loc = cv.minMaxLoc(result)
-
-    # Define the coordinates of the red square
-    top_left = max_loc
-    bottom_right = (top_left[0] + subimg.shape[1], top_left[1] + subimg.shape[0])
-
+    roi = cv.applyColorMap(roi, cv.COLORMAP_HOT)
     original = cv.cvtColor(original, cv.COLOR_GRAY2BGR)
 
-    # Draw the red square on the image
-    cv.rectangle(original, top_left, bottom_right, (255, 0, 0), 3)
+    ic(original.shape)
+    ic(roi.shape)
 
-    Image.fromarray(original).show()
+    modified = cv.bitwise_or(original, roi)
+
+    display_side_by_side(original, modified)

@@ -129,3 +129,15 @@ def compare_image_filter(img: Image, operation: callable, gray=False):
     plt.title("Filtered")
     plt.show()
     return filtered
+
+
+def display_side_by_side(img1_array, img2_array):
+    img1 = Image.fromarray(img1_array)
+    img2 = Image.fromarray(img2_array)
+
+    new_img = Image.new("RGB", (img1.width + img2.width, max(img1.height, img2.height)))
+
+    new_img.paste(img1, (0, 0))
+    new_img.paste(img2, (img1.width, 0))
+
+    new_img.show()
