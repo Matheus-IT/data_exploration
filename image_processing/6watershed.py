@@ -2,10 +2,11 @@ import numpy as np
 import cv2 as cv
 from matplotlib import pyplot as plt
 import pydicom
+from PIL import Image
 
 
-# Carregar imagem
-ds = pydicom.dcmread("image_processing/images/mammography.dcm")
+MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/nbia/CMMD/D1-0001/07-18-2010-NA-NA-79377/1.000000-NA-70244/"
+ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm")
 
 # Get pixel data and metadata
 pixel_data = ds.pixel_array
@@ -44,6 +45,7 @@ img[markers == -1] = [255, 0, 0]
 img = cv.resize(img, (0, 0), fx=0.2, fy=0.2)
 
 # Mostrar o resultado
-cv.imshow("Resultado", img)
-cv.waitKey(0)
-cv.destroyAllWindows()
+Image.fromarray(img).show()
+# cv.imshow("Resultado", img)
+# cv.waitKey(0)
+# cv.destroyAllWindows()
