@@ -53,17 +53,33 @@ with Timer():
     # Convert the new image to binary
     ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_BINARY)
 
-    modified = closing_filter(modified)
-    modified = opening_filter(modified, 3)
-
-    # mark roi with colormap
     modified = modified.astype(np.uint8)
 
     roi = cv.bitwise_and(original, original, mask=modified)
-    roi = cv.applyColorMap(roi, cv.COLORMAP_HOT)
+
+    roi = closing_filter(roi)
+    roi = opening_filter(roi, 3)
+
+    # detect contours
+    roi = cv.Canny(roi, 150, 200)
+    # increase thickness
+    roi = cv.dilate(roi, None, iterations=1)
+
+    roi = cv.cvtColor(roi, cv.COLOR_GRAY2BGR)
+    # Set the red channel values to 255
+    blue_channel = roi[:, :, 0]  # Extract the blue channel (channel index 0)
+    green_channel = roi[:, :, 1]  # Extract the green channel (channel index 1)
+
+    roi[0] = 255  # set red channel to maximum
+    roi[green_channel > 0, 1] = 0  # Set green channel values to 0
+    roi[blue_channel > 0, 2] = 0  # Set blue channel values to 0
+
+    # Image.fromarray(roi).show()
+    # exit()
 
     original = cv.cvtColor(original, cv.COLOR_GRAY2BGR)
 
+    # mark roi with colormap
     modified = cv.bitwise_or(original, roi)
 
     display_side_by_side(original, modified)
