@@ -24,10 +24,10 @@ with Timer():
 
     modified = original.copy()
 
+    # Normalizing image
     modified = normalize(modified)
 
-    height, width = modified.shape
-
+    # Segmenting breast tissue
     kernel_size = (5, 5)
     modified = cv.GaussianBlur(modified, kernel_size, 0)
 
@@ -41,13 +41,16 @@ with Timer():
     big_contour = max(contours, key=cv.contourArea)
 
     # draw largest contour as white filled on black background as mask
+    height, width = modified.shape
     mask = np.zeros((height, width), dtype=np.uint8)
     cv.drawContours(mask, [big_contour], 0, 255, cv.FILLED)
 
     modified = cv.bitwise_and(original, original, mask=mask)
 
+    # Apply high pass filter
     modified = high_pass_filter(modified)
 
+    # get the high intensity cluster using kmeans
     modified = get_high_intensity_cluster_kmeans(modified)
 
     # Convert the new image to binary
@@ -57,29 +60,27 @@ with Timer():
 
     roi = cv.bitwise_and(original, original, mask=modified)
 
+    # Perform a morphological opening filter
     roi = closing_filter(roi)
     roi = opening_filter(roi, 3)
 
-    # detect contours
+    # Detect contours of artifacts
     roi = cv.Canny(roi, 150, 200)
     # increase thickness
     roi = cv.dilate(roi, None, iterations=1)
 
+    # Painting roi fragments in red
     roi = cv.cvtColor(roi, cv.COLOR_GRAY2BGR)
     # Set the red channel values to 255
     blue_channel = roi[:, :, 0]  # Extract the blue channel (channel index 0)
     green_channel = roi[:, :, 1]  # Extract the green channel (channel index 1)
-
     roi[0] = 255  # set red channel to maximum
     roi[green_channel > 0, 1] = 0  # Set green channel values to 0
     roi[blue_channel > 0, 2] = 0  # Set blue channel values to 0
 
-    # Image.fromarray(roi).show()
-    # exit()
-
     original = cv.cvtColor(original, cv.COLOR_GRAY2BGR)
 
-    # mark roi with colormap
+    # Mark roi in original image
     modified = cv.bitwise_or(original, roi)
 
     display_side_by_side(original, modified)
