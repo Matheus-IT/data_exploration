@@ -1,21 +1,11 @@
 import pydicom
-import matplotlib.pyplot as plt
-from pydicom.pixel_data_handlers.util import apply_voi_lut
-from utils.presentation import (
-    show_pixel_info,
-    show_voi_lut_module,
-    show_file_dataset_info,
-    show_pixel_array_info,
-    display_side_by_side,
-)
+from utils.presentation import display_side_by_side
 from utils.segmentation import get_high_intensity_cluster_kmeans
 from utils.filters import opening_filter, closing_filter, high_pass_filter
 import cv2 as cv
-from utils.image_normalization import normalize, denormalize
-from icecream import ic
+from utils.image_normalization import normalize
 import numpy as np
 from utils.elapsed_time import Timer
-from PIL import Image
 
 
 with Timer():
