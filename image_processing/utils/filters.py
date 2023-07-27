@@ -2,14 +2,20 @@ import cv2 as cv
 import numpy as np
 
 
-def opening_filter(image, iter=1):
-    image = cv.erode(image, None, iterations=iter)
-    return cv.dilate(image, None, iterations=iter)
+def get_circular_kernel(size):
+    return cv.getStructuringElement(cv.MORPH_ELLIPSE, (size, size))
 
 
-def closing_filter(image, iter=1):
-    image = cv.dilate(image, None, iterations=iter)
-    return cv.erode(image, None, iterations=iter)
+def opening_filter(image, iter=1, kernel_size=3):
+    kernel = get_circular_kernel(kernel_size)
+    image = cv.erode(image, kernel, iterations=iter)
+    return cv.dilate(image, kernel, iterations=iter)
+
+
+def closing_filter(image, iter=1, kernel_size=3):
+    kernel = get_circular_kernel(kernel_size)
+    image = cv.dilate(image, kernel, iterations=iter)
+    return cv.erode(image, kernel, iterations=iter)
 
 
 def high_pass_filter(image):
