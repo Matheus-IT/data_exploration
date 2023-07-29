@@ -8,7 +8,10 @@ def segment_breast_tissue(image, original_image):
     image = cv.GaussianBlur(image, kernel_size, 0)
 
     # Convert the new image to binary
-    ret, image = cv.threshold(image, 0, 255, cv.THRESH_OTSU)
+    ret, image = cv.threshold(image, 0, 65536, cv.THRESH_OTSU)
+
+    # normalize to 8 bits
+    image = cv.normalize(image, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
 
     # get largest contour
     contours, hierarchy = cv.findContours(
@@ -31,7 +34,7 @@ def enhance_contrast(image):
 
 
 def apply_global_threshold(image):
-    ret, image = cv.threshold(image, 170, 255, cv.THRESH_BINARY)
+    ret, image = cv.threshold(image, 32000, 65536, cv.THRESH_BINARY)
     return image
 
 
@@ -66,6 +69,7 @@ def paint_fragments_in_red(img):
 
 def mark_roi_in_original_image(original, roi):
     # Mark roi in original image
+    original = cv.normalize(original, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
     original = cv.cvtColor(original, cv.COLOR_GRAY2BGR)
     modified = cv.bitwise_or(original, roi)
     return modified
