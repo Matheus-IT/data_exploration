@@ -6,16 +6,18 @@ import cv2 as cv
 from utils.image_normalization import normalize
 import numpy as np
 from utils.elapsed_time import Timer
+from PIL import Image
 
 
 with Timer():
-    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/nbia/CMMD/D2-0001/07-18-2011-NA-NA-75485/1.000000-NA-12786/"
-    original = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm").pixel_array
-
-    modified = original.copy()
+    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/mysubdataset/subdataset_v3/D1-1087/1-2.dcm"
+    ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH)
+    original = ds.pixel_array
 
     # Normalizing image
-    modified = normalize(modified)
+    original = normalize(original)
+
+    modified = original.copy()
 
     # Segmenting breast tissue
     kernel_size = (5, 5)
@@ -37,25 +39,28 @@ with Timer():
 
     modified = cv.bitwise_and(original, original, mask=mask)
 
+    modified = cv.equalizeHist(modified)
+
     # Apply high pass filter
     modified = high_pass_filter(modified)
 
     # get the high intensity cluster using kmeans
-    modified = get_high_intensity_cluster_kmeans(modified)
-
+    # ret, modified = cv.threshold(modified, 150, 255, cv.THRESH_BINARY)
+    display_side_by_side(original, modified)
     # Convert the new image to binary
-    ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_BINARY)
+    # ret, modified = cv.threshold(modified, 0, 255, cv.THRESH_BINARY)
 
     modified = modified.astype(np.uint8)
 
     roi = cv.bitwise_and(original, original, mask=modified)
 
     # Perform a morphological opening filter
-    roi = closing_filter(roi)
-    roi = opening_filter(roi, 3)
+    roi = opening_filter(roi, iter=5, kernel_size=2)
+
+    roi = normalize(roi)
 
     # Detect contours of artifacts
-    roi = cv.Canny(roi, 150, 200)
+    roi = cv.Canny(roi, 100, 200)
     # increase thickness
     roi = cv.dilate(roi, None, iterations=1)
 
@@ -73,4 +78,4 @@ with Timer():
     # Mark roi in original image
     modified = cv.bitwise_or(original, roi)
 
-    display_side_by_side(original, modified)
+    # display_side_by_side(original, modified)
