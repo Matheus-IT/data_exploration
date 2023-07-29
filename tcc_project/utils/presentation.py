@@ -2,6 +2,7 @@ import numpy as np
 from pydicom import FileDataset
 import matplotlib.pyplot as plt
 from PIL import Image, ImageFilter
+import cv2 as cv
 
 
 draw_line = lambda: print("=" * 50)
@@ -132,7 +133,12 @@ def compare_image_filter(img: Image, operation: callable, gray=False):
 
 
 def display_side_by_side(img1_array, img2_array):
+    if img1_array.dtype == "uint16":
+        img1_array = cv.normalize(img1_array, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
     img1 = Image.fromarray(img1_array)
+
+    if img2_array.dtype == "uint16":
+        img2_array = cv.normalize(img2_array, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
     img2 = Image.fromarray(img2_array)
 
     new_img = Image.new("RGB", (img1.width + img2.width, max(img1.height, img2.height)))
