@@ -4,6 +4,8 @@ from utils.filters import opening_filter
 
 
 def segment_breast_tissue(image, original_image):
+    image = crop_image(image)
+
     kernel_size = (5, 5)
     image = cv.GaussianBlur(image, kernel_size, 0)
 
@@ -29,6 +31,21 @@ def segment_breast_tissue(image, original_image):
     return image
 
 
+def crop_image(image):
+    height, width = image.shape
+    image_copy = image.copy()
+
+    # cropping 0.5% of the image width and height
+    width_size = int(width * (0.5 / 100))
+    height_size = int(height * (0.5 / 100))
+
+    image_copy[:height_size, :] = 0  # Top border
+    image_copy[-height_size:, :] = 0  # Bottom border
+    image_copy[:, :width_size] = 0  # Left border
+    image_copy[:, -width_size:] = 0  # Right border
+    return image_copy
+
+
 def enhance_contrast(image):
     return cv.equalizeHist(image)
 
@@ -39,10 +56,12 @@ def apply_global_threshold(image):
 
 
 def get_roi_from_mask(image, mask):
+    # image = cv.normalize(image, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
+    mask = cv.normalize(mask, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
     roi = cv.bitwise_and(image, image, mask=mask)
 
-    # Perform a morphological opening filter
-    roi = opening_filter(roi, iter=5, kernel_size=2)
+    # Perform a morphological opening filter to remove false positives
+    roi = opening_filter(roi, iter=1, kernel_size=2)
 
     roi = cv.normalize(roi, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
     return roi

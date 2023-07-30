@@ -29,7 +29,6 @@ with Timer():
     modified = high_pass_filter(modified)
 
     modified = apply_global_threshold(modified)
-
     display_side_by_side(original, modified)
     exit()
 
