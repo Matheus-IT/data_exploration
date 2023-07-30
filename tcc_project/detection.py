@@ -37,7 +37,7 @@ with Timer():
 
     roi = get_roi_from_mask(modified)
 
-    roi = detect_contours_of_artifacts(roi)
+    roi = detect_contours_of_artifacts(original, roi)
 
     roi = paint_fragments_in_red(roi)
 

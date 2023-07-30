@@ -42,12 +42,58 @@ def get_roi_from_mask(mask):
     return mask
 
 
-def detect_contours_of_artifacts(roi):
+def detect_contours_of_artifacts(original, roi):
     # detect contours
     roi = cv.Canny(roi, 100, 200)
     # increase thickness
     kernel = get_circular_kernel(8)
-    return cv.dilate(roi, kernel, iterations=1)
+    roi = cv.dilate(roi, kernel, iterations=1)
+
+    # Find contours in the Canny image
+    contours, _ = cv.findContours(roi, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+    # Function to calculate the distance between two points
+    def distance(point1, point2):
+        return np.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+
+    # Grouping circles based on proximity
+    grouped_circles = []
+    min_distance_to_group = 300  # Minimum distance to group circles (adjust as needed)
+
+    for contour in contours:
+        (x, y), radius = cv.minEnclosingCircle(contour)
+        center = (int(x), int(y))
+        radius = int(radius)
+
+        # Check if the circle is close to any existing group
+        found_group = False
+        for group in grouped_circles:
+            for circle in group:
+                if distance(center, circle) < min_distance_to_group:
+                    group.append(center)
+                    found_group = True
+                    break
+
+        # If not close to any existing group, start a new group
+        if not found_group:
+            grouped_circles.append([center])
+
+    # Draw rectangles around the groupings
+    for group in grouped_circles:
+        if len(group) >= 3:  # Minimum number of circles to form a grouping
+            xs, ys = zip(*group)
+
+            padding_top_left = 60
+            padding_right_bottom = 100
+            x, y, w, h = (
+                min(xs) - padding_top_left,
+                min(ys) - padding_top_left,
+                max(xs) - min(xs) + padding_right_bottom,
+                max(ys) - min(ys) + padding_right_bottom,
+            )
+            cv.rectangle(roi, (x, y), (x + w, y + h), (255, 255, 255), 15)
+
+    return roi
 
 
 def paint_fragments_in_red(img):
