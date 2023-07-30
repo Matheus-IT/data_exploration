@@ -30,7 +30,7 @@ def enhance_contrast(image):
 
 
 def apply_global_threshold(image):
-    ret, image = cv.threshold(image, 90, 255, cv.THRESH_BINARY)
+    ret, image = cv.threshold(image, 125, 255, cv.THRESH_BINARY)
     return image
 
 
@@ -115,7 +115,7 @@ def mark_roi_in_original_image(original, roi):
     return modified
 
 
-def apply_contrast_stretching(image, low_percentile=96, high_percentile=100):
+def apply_contrast_stretching(image, low_percentile=98.5, high_percentile=100):
     # Calculate the low and high intensity thresholds
     low_threshold, high_threshold = np.percentile(
         image, (low_percentile, high_percentile)
