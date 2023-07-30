@@ -30,15 +30,14 @@ def enhance_contrast(image):
 
 
 def apply_global_threshold(image):
-    ret, image = cv.threshold(image, 100, 255, cv.THRESH_BINARY)
+    ret, image = cv.threshold(image, 90, 255, cv.THRESH_BINARY)
     return image
 
 
 def get_roi_from_mask(mask):
     # Perform a morphological opening filter to remove false positives
-    mask = opening_filter(mask, iter=1, kernel_size=5)
-    mask = closing_filter(mask, iter=3, kernel_size=8)
-    mask = cv.dilate(mask, (5, 5), iterations=1)
+    mask = opening_filter(mask, iter=1, kernel_size=3)
+    mask = closing_filter(mask, iter=2, kernel_size=4)
     return mask
 
 
@@ -114,3 +113,23 @@ def mark_roi_in_original_image(original, roi):
     original = cv.cvtColor(original, cv.COLOR_GRAY2BGR)
     modified = cv.bitwise_or(original, roi)
     return modified
+
+
+def apply_contrast_stretching(image, low_percentile=96, high_percentile=100):
+    # Calculate the low and high intensity thresholds
+    low_threshold, high_threshold = np.percentile(
+        image, (low_percentile, high_percentile)
+    )
+
+    # Clip pixel intensities to the specified thresholds
+    stretched_image = np.clip(image, low_threshold, high_threshold)
+
+    # Scale the pixel intensities to the full 8-bit range (0 to 255)
+    stretched_image = (
+        255 * (stretched_image - low_threshold) / (high_threshold - low_threshold)
+    )
+
+    # Convert the array to 8-bit unsigned integer (uint8) type
+    stretched_image = stretched_image.astype(np.uint8)
+
+    return stretched_image

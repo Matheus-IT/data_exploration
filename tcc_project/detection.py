@@ -9,6 +9,7 @@ from utils.elapsed_time import Timer
 from PIL import Image
 from steps import (
     segment_breast_tissue,
+    apply_contrast_stretching,
     paint_fragments_in_red,
     apply_global_threshold,
     get_roi_from_mask,
@@ -18,7 +19,7 @@ from steps import (
 
 
 with Timer():
-    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D3-0051/1-1.dcm"
+    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D1-0003/1-1.dcm"
     ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH)
     original = ds.pixel_array
 
@@ -32,6 +33,8 @@ with Timer():
     modified = cv.normalize(modified, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
 
     modified = high_pass_filter(modified)
+
+    modified = apply_contrast_stretching(modified)
 
     modified = apply_global_threshold(modified)
 
