@@ -24,18 +24,23 @@ with Timer():
 
     modified = original.copy()
 
+    # normalize to 8 bits
+    modified = cv.normalize(modified, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
+
     modified = segment_breast_tissue(modified, original)
+
+    modified = cv.normalize(modified, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
 
     modified = high_pass_filter(modified)
 
     modified = apply_global_threshold(modified)
-    display_side_by_side(original, modified)
-    exit()
 
-    roi = get_roi_from_mask(original, modified)
+    roi = get_roi_from_mask(modified)
 
     roi = detect_contours_of_artifacts(roi)
 
     roi = paint_fragments_in_red(roi)
 
     modified = mark_roi_in_original_image(original, roi)
+
+    display_side_by_side(original, modified)
