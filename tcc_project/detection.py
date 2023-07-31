@@ -19,7 +19,7 @@ from steps import (
 
 
 with Timer():
-    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D1-0003/1-1.dcm"
+    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D1-0020/1-1.dcm"
     ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH)
     original = ds.pixel_array
 
