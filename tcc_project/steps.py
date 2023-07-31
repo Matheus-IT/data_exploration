@@ -30,7 +30,7 @@ def enhance_contrast(image):
 
 
 def apply_global_threshold(image):
-    ret, image = cv.threshold(image, 125, 255, cv.THRESH_BINARY)
+    ret, image = cv.threshold(image, 140, 255, cv.THRESH_BINARY)
     return image
 
 

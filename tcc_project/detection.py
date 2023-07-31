@@ -34,8 +34,6 @@ with Timer():
 
     modified = high_pass_filter(modified)
 
-    modified = apply_contrast_stretching(modified)
-
     modified = apply_global_threshold(modified)
 
     roi = get_roi_from_mask(modified)
@@ -45,5 +43,4 @@ with Timer():
     roi = paint_fragments_in_red(roi)
 
     modified = mark_roi_in_original_image(original, roi)
-
     display_side_by_side(original, modified)
