@@ -22,6 +22,8 @@ def segment_breast_tissue(image, original_image):
 
     image = cv.bitwise_and(original_image, original_image, mask=mask)
 
+    image = cv.normalize(image, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
+
     return image
 
 
