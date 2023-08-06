@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 from utils.filters import opening_filter, closing_filter, get_circular_kernel
+from PIL import Image
+from utils.presentation import display_side_by_side
 
 
 def segment_breast_tissue(image, original_image):

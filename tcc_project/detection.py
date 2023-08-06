@@ -19,7 +19,7 @@ from steps import (
 
 
 with Timer():
-    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D3-0050/1-1.dcm"
+    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D3-0051/1-1.dcm"
     ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH)
     original = ds.pixel_array
 
@@ -30,7 +30,7 @@ with Timer():
 
     modified = segment_breast_tissue(modified, original)
 
-    modified = cv.normalize(modified, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
+    exit()
 
     modified = high_pass_filter(modified)
 
