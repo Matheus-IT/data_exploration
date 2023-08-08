@@ -30,8 +30,6 @@ with Timer():
 
     modified = segment_breast_tissue(modified, original)
 
-    exit()
-
     modified = high_pass_filter(modified)
 
     modified = apply_global_threshold(modified)
