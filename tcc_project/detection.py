@@ -5,7 +5,7 @@ from utils.filters import opening_filter, closing_filter, high_pass_filter
 import cv2 as cv
 from utils.image_normalization import normalize
 import numpy as np
-from utils.elapsed_time import Timer
+from utils.elapsed_time import Timer, sample_time_expensive_calls
 from PIL import Image
 from steps import (
     segment_breast_tissue,
@@ -18,7 +18,8 @@ from steps import (
 )
 
 
-with Timer():
+@sample_time_expensive_calls()
+def main():
     MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D3-0051/1-1.dcm"
     ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH)
     original = ds.pixel_array
@@ -41,4 +42,8 @@ with Timer():
     roi = paint_fragments_in_red(roi)
 
     modified = mark_roi_in_original_image(original, roi)
-    display_side_by_side(original, modified)
+    # display_side_by_side(original, modified)
+
+
+if __name__ == '__main__':
+    main()
