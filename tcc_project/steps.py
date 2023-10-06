@@ -6,6 +6,9 @@ from utils.presentation import display_side_by_side
 
 
 def segment_breast_tissue(image, original_image):
+    # normalize to 8 bits
+    image = cv.normalize(image, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
+
     image = cv.GaussianBlur(image, (5, 5), 0)
 
     # Convert the new image to binary

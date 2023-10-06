@@ -26,9 +26,6 @@ def main():
 
     modified = original.copy()
 
-    # normalize to 8 bits
-    modified = cv.normalize(modified, None, 0, 255, cv.NORM_MINMAX, cv.CV_8U)
-
     modified = segment_breast_tissue(modified, original)
 
     modified = high_pass_filter(modified)
@@ -42,7 +39,8 @@ def main():
     roi = paint_fragments_in_red(roi)
 
     modified = mark_roi_in_original_image(original, roi)
-    # display_side_by_side(original, modified)
+
+    display_side_by_side(original, modified)
 
 
 if __name__ == '__main__':
