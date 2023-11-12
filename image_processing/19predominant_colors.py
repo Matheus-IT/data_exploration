@@ -3,6 +3,9 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 
 
+LABEL_IMAGE_SIZE = (200, 200)
+
+
 class ImageProcessorApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -13,14 +16,14 @@ class ImageProcessorApp(tk.Tk):
 
         # Load an image
         image = Image.open("image_processing/icons/app_logo.jpg")  # Replace with the actual path to your image
-        self.photo = ImageTk.PhotoImage(image.resize((100, 100)))
+        self.photo = ImageTk.PhotoImage(image.resize(LABEL_IMAGE_SIZE))
         # Create a label to display the image on top of the button
         self.image_label = tk.Label(self, image=self.photo)
         self.image_label.place(relx=0.5, rely=0.5, anchor="center")  # Adjust the position as needed
 
         # Button to trigger image upload
         upload_button = tk.Button(self, text="Upload Image", command=self.upload_image)
-        upload_button.pack(pady=20)
+        upload_button.pack(pady=100)
 
     def upload_image(self):
         # Open a file dialog to select an image file
@@ -32,7 +35,7 @@ class ImageProcessorApp(tk.Tk):
             image = Image.open(file_path)
 
             # Display the image in the Tkinter window
-            photo = ImageTk.PhotoImage(image)
+            photo = ImageTk.PhotoImage(image.resize(LABEL_IMAGE_SIZE))
             self.image_label.config(image=photo)
             self.image_label.image = photo  # to prevent garbage collection
 
