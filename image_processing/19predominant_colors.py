@@ -7,16 +7,20 @@ class ImageProcessorApp(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("500x500")
         self.title("Image Processor")
+        self.geometry("500x500")
+        self.iconbitmap("image_processing/icons/app_icon.ico") # window icon
 
-        # Create a label to display the image
-        self.image_label = tk.Label(self)
-        self.image_label.pack(padx=10, pady=10)
+        # Load an image
+        image = Image.open("image_processing/icons/app_logo.jpg")  # Replace with the actual path to your image
+        self.photo = ImageTk.PhotoImage(image.resize((100, 100)))
+        # Create a label to display the image on top of the button
+        self.image_label = tk.Label(self, image=self.photo)
+        self.image_label.place(relx=0.5, rely=0.5, anchor="center")  # Adjust the position as needed
 
         # Button to trigger image upload
         upload_button = tk.Button(self, text="Upload Image", command=self.upload_image)
-        upload_button.pack(pady=10)
+        upload_button.pack(pady=20)
 
     def upload_image(self):
         # Open a file dialog to select an image file
