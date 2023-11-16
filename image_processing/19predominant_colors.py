@@ -1,11 +1,8 @@
-import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk
+import sys
+from PIL import Image
 import cv2 as cv
 import numpy as np
-
-
-LABEL_IMAGE_SIZE = (200, 200)
+from PyQt6.QtWidgets import QApplication, QLabel, QWidget
 
 
 # helpers ---------------------------------------------------------------------
@@ -39,63 +36,71 @@ def plotColors(hist, centroids):
 # -----------------------------------------------------------------------------
 
 
-class ImageProcessorApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
+# class ImageProcessorApp(tk.Tk):
+#     def __init__(self):
+#         super().__init__()
 
-        self.title("Image Processor")
-        self.geometry("500x500")
-        self.iconbitmap("image_processing/icons/app_icon.ico") # window icon
+#         self.title("Image Processor")
+#         self.geometry("500x500")
+#         self.iconbitmap("image_processing/icons/app_icon.ico") # window icon
 
-        # Load an image
-        image = Image.open("image_processing/icons/app_logo.jpg")  # Replace with the actual path to your image
-        self.photo = ImageTk.PhotoImage(image.resize(LABEL_IMAGE_SIZE))
-        # Create a label to display the image on top of the button
-        self.image_label = tk.Label(self, image=self.photo)
-        self.image_label.place(relx=0.5, rely=0.5, anchor="center")  # Adjust the position as needed
+#         # Button to trigger image upload
+#         upload_button = tk.Button(self, text="Upload Image", command=self.upload_image)
+#         upload_button.place(relx=0.5, y=50, anchor='center')
 
-        # Button to trigger image upload
-        upload_button = tk.Button(self, text="Upload Image", command=self.upload_image)
-        upload_button.pack(pady=100)
+#         # Center image - starts with the app logo
+#         image = Image.open("image_processing/icons/app_logo.jpg")
+#         self.photo = ImageTk.PhotoImage(image.resize(LABEL_IMAGE_SIZE))
+#         # Create a label to display the image on top of the button
+#         self.image_label = tk.Label(self, image=self.photo)
+#         self.image_label.place(relx=0.5, y=upload_button.winfo_y()+200, anchor='center')
 
-        process_button = tk.Button(self, text='Process colors', command=self.process_image_colors)
-        process_button.place(relx=0.5, rely=0.8, anchor="center")
+#         process_button = tk.Button(self, text='Process colors', command=self.process_image_colors)
+#         process_button.place(relx=0.5, y=self.image_label.winfo_y()+350, anchor='center')
 
-    def upload_image(self):
-        # Open a file dialog to select an image file
-        file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+#     def upload_image(self):
+#         # Open a file dialog to select an image file
+#         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
 
-        if file_path:
-            self.image_to_process = file_path
+#         if file_path:
+#             self.image_to_process = file_path
 
-            # Display the image in the Tkinter window
-            photo = ImageTk.PhotoImage(Image.open(file_path).resize(LABEL_IMAGE_SIZE))
-            self.image_label.config(image=photo)
-            self.image_label.image = photo  # to prevent garbage collection
+#             # Display the image in the Tkinter window
+#             photo = ImageTk.PhotoImage(Image.open(file_path).resize(LABEL_IMAGE_SIZE))
+#             self.image_label.config(image=photo)
+#             self.image_label.image = photo  # to prevent garbage collection
 
-    def process_image_colors(self):
-        print('process_image_colors')
-        from sklearn.cluster import KMeans
+#     def process_image_colors(self):
+#         from sklearn.cluster import KMeans
 
-        self.image_to_process = cv.imread(self.image_to_process)
-        # We reshape our image into a list of RGB pixels
-        self.image_to_process = cv.cvtColor(self.image_to_process, cv.COLOR_BGR2RGB)
-        self.image_to_process = self.image_to_process.reshape((self.image_to_process.shape[0] * self.image_to_process.shape[1], 3))
+#         self.image_to_process = cv.imread(self.image_to_process)
+#         # We reshape our image into a list of RGB pixels
+#         self.image_to_process = cv.cvtColor(self.image_to_process, cv.COLOR_BGR2RGB)
+#         self.image_to_process = self.image_to_process.reshape((self.image_to_process.shape[0] * self.image_to_process.shape[1], 3))
 
-        number_of_clusters = 5
-        clt = KMeans(number_of_clusters)
-        clt.fit(self.image_to_process)
+#         number_of_clusters = 5
+#         clt = KMeans(number_of_clusters)
+#         clt.fit(self.image_to_process)
 
-        hist = centroidHistogram(clt)
-        bar = plotColors(hist, clt.cluster_centers_)
-        bar = Image.fromarray(bar)
-        bar.show()
-        bar = ImageTk.PhotoImage(bar.resize(LABEL_IMAGE_SIZE))
-        # Create a label to display the image on top of the button
-        bar_image_label = tk.Label(self, image=bar)
-        bar_image_label.place(relx=0.5, rely=1.0, anchor="center")
+#         hist = centroidHistogram(clt)
+#         bar = plotColors(hist, clt.cluster_centers_)
+#         bar = Image.open("image_processing/icons/app_logo.jpg")
+#         photo = ImageTk.PhotoImage(bar.resize(LABEL_IMAGE_SIZE))
+#         # Create a label to display the image on top of the button
+#         self.result_image = tk.Label(self, image=photo)
+#         self.result_image.pack()
 
 
 if __name__ == "__main__":
-    app = ImageProcessorApp()
-    app.mainloop()
+    app = QApplication([])
+
+    window = QWidget()
+    window.setWindowTitle("PyQt App")
+    window.setGeometry(100, 100, 600, 500)
+    helloMsg = QLabel("<h1>Hello, World!</h1>", parent=window)
+    helloMsg.move(60, 15)
+    
+    window.show()
+
+    # 5. Run your application's event loop
+    sys.exit(app.exec())
