@@ -2,7 +2,15 @@ import sys
 from PIL import Image
 import cv2 as cv
 import numpy as np
-from PyQt6.QtWidgets import QApplication, QLabel, QWidget
+from PyQt6.QtWidgets import (
+    QApplication,
+    QLabel,
+    QWidget,
+    QPushButton,
+    QFileDialog,
+    QHBoxLayout,
+)
+from PyQt6 import QtCore, QtGui
 
 
 # helpers ---------------------------------------------------------------------
@@ -91,6 +99,13 @@ def plotColors(hist, centroids):
 #         self.result_image.pack()
 
 
+def handle_file_upload_btn(window):
+    file_dialog = QFileDialog()
+    file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg)")
+    filename = file_dialog.getOpenFileName(window, 'Open Image', '.')
+    print('Path file :', filename)
+
+
 if __name__ == "__main__":
     app = QApplication([])
 
@@ -99,8 +114,14 @@ if __name__ == "__main__":
     window.setGeometry(100, 100, 600, 500)
     helloMsg = QLabel("<h1>Hello, World!</h1>", parent=window)
     helloMsg.move(60, 15)
+
+    uploadButton = QPushButton('UPLOAD', window)
+    uploadButton.clicked.connect(lambda: handle_file_upload_btn(window))
     
+    hBoxLayout = QHBoxLayout()
+    hBoxLayout.addWidget(uploadButton)
+    window.setLayout(hBoxLayout)
+
     window.show()
 
-    # 5. Run your application's event loop
     sys.exit(app.exec())
