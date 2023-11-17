@@ -1,5 +1,7 @@
 import sys
+import typing
 from PIL import Image
+from PyQt6 import QtCore
 import cv2 as cv
 import numpy as np
 from PyQt6.QtWidgets import (
@@ -10,7 +12,8 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
 )
-from PyQt6 import QtCore, QtGui
+from PyQt6.QtGui import QPixmap, QImage
+from PyQt6.QtCore import Qt
 
 
 # helpers ---------------------------------------------------------------------
@@ -44,84 +47,67 @@ def plotColors(hist, centroids):
 # -----------------------------------------------------------------------------
 
 
-# class ImageProcessorApp(tk.Tk):
-#     def __init__(self):
-#         super().__init__()
+class AppWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        
+        self.setWindowTitle("PyQt App")
+        self.setGeometry(100, 100, 600, 500)
 
-#         self.title("Image Processor")
-#         self.geometry("500x500")
-#         self.iconbitmap("image_processing/icons/app_icon.ico") # window icon
+        helloMsg = QLabel("<h1>Hello, World!</h1>", parent=self)
+        helloMsg.move(60, 15)
 
-#         # Button to trigger image upload
-#         upload_button = tk.Button(self, text="Upload Image", command=self.upload_image)
-#         upload_button.place(relx=0.5, y=50, anchor='center')
+        uploadButton = QPushButton('UPLOAD', parent=self)
+        uploadButton.clicked.connect(self.handle_file_upload_btn)
+        
+        self.hBoxLayout = QHBoxLayout()
+        self.hBoxLayout.addWidget(uploadButton)
+        self.setLayout(self.hBoxLayout)
+    
+    def handle_file_upload_btn(self):
+        file_dialog = QFileDialog()
+        file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg)")
+        file_path, _ = file_dialog.getOpenFileName(self, 'Open Image', '.')
+        self.chosen_image_file_path = file_path
 
-#         # Center image - starts with the app logo
-#         image = Image.open("image_processing/icons/app_logo.jpg")
-#         self.photo = ImageTk.PhotoImage(image.resize(LABEL_IMAGE_SIZE))
-#         # Create a label to display the image on top of the button
-#         self.image_label = tk.Label(self, image=self.photo)
-#         self.image_label.place(relx=0.5, y=upload_button.winfo_y()+200, anchor='center')
+        pixmap = QPixmap(self.chosen_image_file_path).scaled(250, 250, Qt.AspectRatioMode.KeepAspectRatio)
+        lbl = QLabel(parent=self)
+        lbl.setPixmap(pixmap)
+        self.hBoxLayout.addWidget(lbl)
 
-#         process_button = tk.Button(self, text='Process colors', command=self.process_image_colors)
-#         process_button.place(relx=0.5, y=self.image_label.winfo_y()+350, anchor='center')
+        process_button = QPushButton('PROCESS', parent=self)
+        process_button.clicked.connect(self.handle_process_chosen_image)
+        self.hBoxLayout.addWidget(process_button)
+    
+    def handle_process_chosen_image(self):
+        from sklearn.cluster import KMeans
 
-#     def upload_image(self):
-#         # Open a file dialog to select an image file
-#         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+        self.image_to_process = cv.imread(self.chosen_image_file_path)
 
-#         if file_path:
-#             self.image_to_process = file_path
+        # We reshape our image into a list of RGB pixels
+        self.image_to_process = cv.cvtColor(self.image_to_process, cv.COLOR_BGR2RGB)
+        self.image_to_process = self.image_to_process.reshape((self.image_to_process.shape[0] * self.image_to_process.shape[1], 3))
 
-#             # Display the image in the Tkinter window
-#             photo = ImageTk.PhotoImage(Image.open(file_path).resize(LABEL_IMAGE_SIZE))
-#             self.image_label.config(image=photo)
-#             self.image_label.image = photo  # to prevent garbage collection
+        number_of_clusters = 5
+        clt = KMeans(number_of_clusters)
+        clt.fit(self.image_to_process)
 
-#     def process_image_colors(self):
-#         from sklearn.cluster import KMeans
-
-#         self.image_to_process = cv.imread(self.image_to_process)
-#         # We reshape our image into a list of RGB pixels
-#         self.image_to_process = cv.cvtColor(self.image_to_process, cv.COLOR_BGR2RGB)
-#         self.image_to_process = self.image_to_process.reshape((self.image_to_process.shape[0] * self.image_to_process.shape[1], 3))
-
-#         number_of_clusters = 5
-#         clt = KMeans(number_of_clusters)
-#         clt.fit(self.image_to_process)
-
-#         hist = centroidHistogram(clt)
-#         bar = plotColors(hist, clt.cluster_centers_)
-#         bar = Image.open("image_processing/icons/app_logo.jpg")
-#         photo = ImageTk.PhotoImage(bar.resize(LABEL_IMAGE_SIZE))
-#         # Create a label to display the image on top of the button
-#         self.result_image = tk.Label(self, image=photo)
-#         self.result_image.pack()
-
-
-def handle_file_upload_btn(window):
-    file_dialog = QFileDialog()
-    file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg)")
-    filename = file_dialog.getOpenFileName(window, 'Open Image', '.')
-    print('Path file :', filename)
+        hist = centroidHistogram(clt)
+        bar = plotColors(hist, clt.cluster_centers_)
+        
+        h, w, ch = bar.shape
+        bytes_per_line = ch * w
+        image = QImage(bar.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
+        pixmap = QPixmap.fromImage(image).scaled(250, 250, Qt.AspectRatioMode.KeepAspectRatio)
+        lbl = QLabel(parent=self)
+        lbl.setPixmap(pixmap)
+        self.hBoxLayout.addWidget(lbl)
 
 
 if __name__ == "__main__":
     app = QApplication([])
 
-    window = QWidget()
-    window.setWindowTitle("PyQt App")
-    window.setGeometry(100, 100, 600, 500)
-    helloMsg = QLabel("<h1>Hello, World!</h1>", parent=window)
-    helloMsg.move(60, 15)
-
-    uploadButton = QPushButton('UPLOAD', window)
-    uploadButton.clicked.connect(lambda: handle_file_upload_btn(window))
-    
-    hBoxLayout = QHBoxLayout()
-    hBoxLayout.addWidget(uploadButton)
-    window.setLayout(hBoxLayout)
-
+    window = AppWindow()
     window.show()
 
     sys.exit(app.exec())
