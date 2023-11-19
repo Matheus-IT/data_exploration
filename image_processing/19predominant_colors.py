@@ -11,6 +11,8 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QFileDialog,
     QHBoxLayout,
+    QVBoxLayout,
+    QSizePolicy,
 )
 from PyQt6.QtGui import QPixmap, QImage
 from PyQt6.QtCore import Qt
@@ -44,6 +46,17 @@ def plotColors(hist, centroids):
         color.astype("uint8").tolist(), -1)
       x_start = end
     return bar
+
+def addWidgetHCenter(layout, widget):
+    layout.addWidget(widget)
+    return layout.setAlignment(widget, Qt.AlignmentFlag.AlignHCenter)
+
+def addSpacing(layout, space_amount):
+    # Create an empty widget to act as a margin
+    margin_widget = QWidget()
+    margin_widget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+    margin_widget.setFixedHeight(space_amount)  # Set the height as the margin size
+    layout.addWidget(margin_widget)
 # -----------------------------------------------------------------------------
 
 
@@ -52,29 +65,37 @@ class AppWindow(QWidget):
         super().__init__()
         
         self.setWindowTitle("PyQt App")
-        self.setGeometry(100, 100, 600, 500)
+        self.setGeometry(100, 100, 600, 300)
 
         uploadButton = QPushButton('UPLOAD', parent=self)
         uploadButton.clicked.connect(self.handle_file_upload_btn)
+        uploadButton.setStyleSheet("max-width: 250px")
         
-        self.hBoxLayout = QHBoxLayout()
-        self.hBoxLayout.addWidget(uploadButton)
-        self.setLayout(self.hBoxLayout)
+        self.mainLayout = QVBoxLayout()
+
+        addWidgetHCenter(self.mainLayout, uploadButton)
+
+        self.setLayout(self.mainLayout)
     
     def handle_file_upload_btn(self):
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg)")
         file_path, _ = file_dialog.getOpenFileName(self, 'Open Image', '.')
+        if not file_path:
+            return
+
         self.chosen_image_file_path = file_path
 
         pixmap = QPixmap(self.chosen_image_file_path).scaled(250, 250, Qt.AspectRatioMode.KeepAspectRatio)
         lbl = QLabel(parent=self)
         lbl.setPixmap(pixmap)
-        self.hBoxLayout.addWidget(lbl)
+        addWidgetHCenter(self.mainLayout, lbl)
 
-        process_button = QPushButton('PROCESS', parent=self)
-        process_button.clicked.connect(self.handle_process_chosen_image)
-        self.hBoxLayout.addWidget(process_button)
+        if not hasattr(self, 'processButton'):
+            self.processButton = QPushButton('PROCESS', parent=self)
+            self.processButton.setStyleSheet("max-width: 250px")
+            self.processButton.clicked.connect(self.handle_process_chosen_image)
+            addWidgetHCenter(self.mainLayout, self.processButton)
     
     def handle_process_chosen_image(self):
         from sklearn.cluster import KMeans
@@ -94,11 +115,13 @@ class AppWindow(QWidget):
         
         h, w, ch = bar.shape
         bytes_per_line = ch * w
+        
         image = QImage(bar.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
         pixmap = QPixmap.fromImage(image).scaled(250, 250, Qt.AspectRatioMode.KeepAspectRatio)
+        
         lbl = QLabel(parent=self)
         lbl.setPixmap(pixmap)
-        self.hBoxLayout.addWidget(lbl)
+        addWidgetHCenter(self.mainLayout, lbl)
 
 
 if __name__ == "__main__":
