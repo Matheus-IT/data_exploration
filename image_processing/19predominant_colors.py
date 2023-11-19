@@ -54,9 +54,6 @@ class AppWindow(QWidget):
         self.setWindowTitle("PyQt App")
         self.setGeometry(100, 100, 600, 500)
 
-        helloMsg = QLabel("<h1>Hello, World!</h1>", parent=self)
-        helloMsg.move(60, 15)
-
         uploadButton = QPushButton('UPLOAD', parent=self)
         uploadButton.clicked.connect(self.handle_file_upload_btn)
         
