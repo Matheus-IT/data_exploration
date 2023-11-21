@@ -20,7 +20,7 @@ from PyQt6.QtCore import Qt
 
 # helpers ---------------------------------------------------------------------
 def centroidHistogram(clt):
-    # Create a histrogram for the clusters based on the pixels in each cluster
+    # Create a histogram for the clusters based on the pixels in each cluster
     # Get the labels for each cluster
     numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
 
