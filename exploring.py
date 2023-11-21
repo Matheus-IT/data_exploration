@@ -27,4 +27,16 @@ CONCLUSÃO:
 - BIOMETRIA FETAL COMPATIVEL COM SEMANAS E DIAS 
 - ADEQUADO PARA IDADE GESTACIONAL [[Length]]"""
 
-print(re.findall(r'\[\[.+?\]\]', my_string))
+# print(re.findall(r'\[\[.+?\]\]', my_string))
+
+# my_list = [
+#     {
+#         0: {'name': 'matheus'},
+#         1: {'name': 'carol'},
+#     }
+# ]
+
+my_list = [1, 2]
+my_list2 = [1, 2]
+
+print(my_list == my_list2)
