@@ -40,11 +40,16 @@ def plotColors(hist, centroids):
     x_start = 0
     # iterate over the percentage and dominant color of each cluster
     for (percent, color) in zip(hist, centroids):
-      # plot the relative percentage of each cluster
-      end = x_start + (percent * 500)
-      cv.rectangle(bar, (int(x_start), 0), (int(end), 100),
-        color.astype("uint8").tolist(), -1)
-      x_start = end
+        # plot the relative percentage of each cluster
+        end = x_start + (percent * 500)
+        cv.rectangle(
+            bar,
+            (int(x_start), 0),
+            (int(end), 100),
+            color.astype("uint8").tolist(),
+            -1
+        )
+        x_start = end
     return bar
 
 def addWidgetHCenter(layout, widget):
