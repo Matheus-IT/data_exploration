@@ -1,5 +1,4 @@
 import sys
-import typing
 from PIL import Image
 from PyQt6 import QtCore
 import cv2 as cv
@@ -62,6 +61,15 @@ def addSpacing(layout, space_amount):
     margin_widget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
     margin_widget.setFixedHeight(space_amount)  # Set the height as the margin size
     layout.addWidget(margin_widget)
+
+def clearLayout(layout):
+    if layout is not None:
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                clearLayout(child.layout())
 # -----------------------------------------------------------------------------
 
 
@@ -72,20 +80,19 @@ class AppWindow(QWidget):
         self.setWindowTitle("PyQt App")
         self.setGeometry(100, 100, 600, 300)
 
-        uploadButton = QPushButton('UPLOAD', parent=self)
-        uploadButton.clicked.connect(self.handle_file_upload_btn)
-        uploadButton.setStyleSheet("max-width: 250px")
-        
         self.mainLayout = QVBoxLayout()
 
-        addWidgetHCenter(self.mainLayout, uploadButton)
+        self.uploadButton = self.setupUploadButton()
 
         self.setLayout(self.mainLayout)
     
     def handle_file_upload_btn(self):
+        clearLayout(self.mainLayout)
+        self.uploadButton = self.setupUploadButton()
+
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg)")
-        file_path, _ = file_dialog.getOpenFileName(self, 'Open Image', '.')
+        file_path, _ = file_dialog.getOpenFileName(self, 'Open Image', './image_processing/images/')
         if not file_path:
             return
 
@@ -117,6 +124,16 @@ class AppWindow(QWidget):
 
         hist = centroidHistogram(clt)
         bar = plotColors(hist, clt.cluster_centers_)
+
+        layout = QVBoxLayout()
+
+        for color in clt.cluster_centers_:
+            rgb_value = f'rgb({", ".join(map(str, color.astype("uint8")))})'
+            label = QLabel(rgb_value)
+            label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+            layout.addWidget(label)
+        
+        self.mainLayout.addLayout(layout)
         
         h, w, ch = bar.shape
         bytes_per_line = ch * w
@@ -127,6 +144,12 @@ class AppWindow(QWidget):
         lbl = QLabel(parent=self)
         lbl.setPixmap(pixmap)
         addWidgetHCenter(self.mainLayout, lbl)
+    
+    def setupUploadButton(self):
+        self.uploadButton = QPushButton('UPLOAD', parent=self)
+        self.uploadButton.clicked.connect(self.handle_file_upload_btn)
+        self.uploadButton.setStyleSheet("max-width: 250px")
+        addWidgetHCenter(self.mainLayout, self.uploadButton)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,3 @@
-from PIL import Image
+mylist = [1, 2, 3]
 
-Image.open('image_processing/images/landscape.jpg').show()
+print(','.join(map(str, mylist)))
