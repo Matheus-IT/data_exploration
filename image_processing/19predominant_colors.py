@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QSizePolicy,
+    QFrame,
 )
 from PyQt6.QtGui import QPixmap, QImage
 from PyQt6.QtCore import Qt
@@ -81,6 +82,39 @@ class AppWindow(QWidget):
         self.setGeometry(100, 100, 600, 300)
 
         self.mainLayout = QVBoxLayout()
+
+        # Testing zone --------------------------------------------------------
+        colors = [
+            (206, 47, 47),
+            (157, 131, 131),
+            (253, 253, 253),
+            (181, 14, 14),
+            (195, 191, 191),
+        ]
+        layout = QVBoxLayout()
+
+        for color in colors:
+            rgb_value = f'rgb({", ".join(map(str, color))})'
+
+            background = QFrame()
+            background.setStyleSheet(f'background-color: {rgb_value}')
+
+            hLayout = QHBoxLayout(background)
+
+            label = QLabel(rgb_value)
+            label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+
+            hLayout.addWidget(label)
+            hLayout.addStretch(1)
+
+            copyButton = QPushButton('COPY')
+            copyButton.setStyleSheet("max-width: 250px")
+            hLayout.addWidget(copyButton)
+
+            layout.addWidget(background)
+        # ---------------------------------------------------------------------
+        
+        self.mainLayout.addLayout(layout)
 
         self.uploadButton = self.setupUploadButton()
 
