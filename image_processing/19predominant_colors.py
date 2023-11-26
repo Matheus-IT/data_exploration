@@ -13,9 +13,11 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QSizePolicy,
     QFrame,
+    QApplication,
 )
+from functools import partial
 from PyQt6.QtGui import QPixmap, QImage
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QMimeData
 
 
 # helpers ---------------------------------------------------------------------
@@ -88,27 +90,28 @@ class AppWindow(QWidget):
             (206, 47, 47),
             (157, 131, 131),
             (253, 253, 253),
-            (181, 14, 14),
             (195, 191, 191),
+            (181, 14, 14),
         ]
         layout = QVBoxLayout()
 
         for color in colors:
-            rgb_value = f'rgb({", ".join(map(str, color))})'
+            rgbValue = f'rgb({", ".join(map(str, color))})'
 
             background = QFrame()
-            background.setStyleSheet(f'background-color: {rgb_value}')
+            background.setStyleSheet(f'background-color: {rgbValue}')
 
             hLayout = QHBoxLayout(background)
 
-            label = QLabel(rgb_value)
+            label = QLabel(rgbValue)
             label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
 
             hLayout.addWidget(label)
             hLayout.addStretch(1)
 
             copyButton = QPushButton('COPY')
-            copyButton.setStyleSheet("max-width: 250px")
+            copyButton.setStyleSheet("width: 50px; background-color: #fff")
+            copyButton.clicked.connect(partial(self.copyText, rgbValue))
             hLayout.addWidget(copyButton)
 
             layout.addWidget(background)
@@ -184,6 +187,14 @@ class AppWindow(QWidget):
         self.uploadButton.clicked.connect(self.handle_file_upload_btn)
         self.uploadButton.setStyleSheet("max-width: 250px")
         addWidgetHCenter(self.mainLayout, self.uploadButton)
+    
+    def copyText(self, rgb_value):
+        # Create a QMimeData object to hold the text
+        mime_data = QMimeData()
+        mime_data.setText(rgb_value)
+        # Access the clipboard and set its data to the QMimeData object
+        clipboard = QApplication.clipboard()
+        clipboard.setMimeData(mime_data)
 
 
 if __name__ == "__main__":
