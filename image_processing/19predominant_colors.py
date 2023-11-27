@@ -85,11 +85,13 @@ class AppWindow(QWidget):
         self.setWindowTitle("PyQt App")
         self.setGeometry(100, 100, 600, 300)
 
+        self.container = QHBoxLayout()
         self.mainLayout = QVBoxLayout()
+        self.container.addLayout(self.mainLayout)
 
         self.uploadButton = self.setupUploadButton()
 
-        self.setLayout(self.mainLayout)
+        self.setLayout(self.container)
 
     def handle_file_upload_btn(self):
         clearLayout(self.mainLayout)
@@ -133,7 +135,8 @@ class AppWindow(QWidget):
         clt = KMeans(number_of_clusters)
         clt.fit(self.image_to_process)
 
-        hist = centroidHistogram(clt)
+        self.sideLayout = QVBoxLayout()
+        self.container.addLayout(self.sideLayout)
 
         layout = QVBoxLayout()
 
@@ -160,7 +163,7 @@ class AppWindow(QWidget):
 
             layout.addWidget(background)
 
-        self.mainLayout.addLayout(layout)
+        self.sideLayout.addLayout(layout)
 
     def setupUploadButton(self):
         self.uploadButton = QPushButton("UPLOAD", parent=self)
