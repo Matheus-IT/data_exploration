@@ -87,16 +87,22 @@ class AppWindow(QWidget):
 
         self.container = QHBoxLayout()
         self.mainLayout = QVBoxLayout()
-        self.container.addLayout(self.mainLayout)
+        mainLayoutContainer = QWidget()
+        mainLayoutContainer.setFixedWidth(250)
+
+        self.actionButtonsLayout = QHBoxLayout()
+        self.imageLayout = QHBoxLayout()
+        self.mainLayout.addLayout(self.imageLayout)
+        self.mainLayout.addLayout(self.actionButtonsLayout)
+
+        mainLayoutContainer.setLayout(self.mainLayout)
+        self.container.addWidget(mainLayoutContainer)
 
         self.uploadButton = self.setupUploadButton()
 
         self.setLayout(self.container)
 
     def handle_file_upload_btn(self):
-        clearLayout(self.mainLayout)
-        self.uploadButton = self.setupUploadButton()
-
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("Images (*.png *.jpg *.jpeg)")
         file_path, _ = file_dialog.getOpenFileName(
@@ -108,17 +114,17 @@ class AppWindow(QWidget):
         self.chosen_image_file_path = file_path
 
         pixmap = QPixmap(self.chosen_image_file_path).scaled(
-            250, 250, Qt.AspectRatioMode.KeepAspectRatio
+            230, 230, Qt.AspectRatioMode.KeepAspectRatio
         )
         lbl = QLabel(parent=self)
         lbl.setPixmap(pixmap)
-        addWidgetHCenter(self.mainLayout, lbl)
+        addWidgetHCenter(self.imageLayout, lbl)
 
         if not hasattr(self, "processButton"):
             self.processButton = QPushButton("PROCESS", parent=self)
             self.processButton.setStyleSheet("max-width: 250px")
             self.processButton.clicked.connect(self.handle_process_chosen_image)
-            addWidgetHCenter(self.mainLayout, self.processButton)
+            addWidgetHCenter(self.actionButtonsLayout, self.processButton)
 
     def handle_process_chosen_image(self):
         from sklearn.cluster import KMeans
@@ -169,7 +175,7 @@ class AppWindow(QWidget):
         self.uploadButton = QPushButton("UPLOAD", parent=self)
         self.uploadButton.clicked.connect(self.handle_file_upload_btn)
         self.uploadButton.setStyleSheet("max-width: 250px")
-        addWidgetHCenter(self.mainLayout, self.uploadButton)
+        addWidgetHCenter(self.actionButtonsLayout, self.uploadButton)
 
     def copyText(self, rgb_value):
         # Create a QMimeData object to hold the text
