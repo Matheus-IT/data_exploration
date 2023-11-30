@@ -82,7 +82,7 @@ class AppWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("PyQt App")
+        self.setWindowTitle("Image Processor")
         self.setGeometry(100, 100, 600, 300)
 
         self.container = QHBoxLayout()
@@ -92,6 +92,14 @@ class AppWindow(QWidget):
 
         self.actionButtonsLayout = QHBoxLayout()
         self.imageLayout = QHBoxLayout()
+
+        pixmap = QPixmap("image_processing/icons/app_logo.jpg").scaled(
+            230, 230, Qt.AspectRatioMode.KeepAspectRatio
+        )
+        self.mainImageLbl = QLabel(parent=self)
+        self.mainImageLbl.setPixmap(pixmap)
+        addWidgetHCenter(self.imageLayout, self.mainImageLbl)
+
         self.mainLayout.addLayout(self.imageLayout)
         self.mainLayout.addLayout(self.actionButtonsLayout)
 
@@ -116,9 +124,7 @@ class AppWindow(QWidget):
         pixmap = QPixmap(self.chosen_image_file_path).scaled(
             230, 230, Qt.AspectRatioMode.KeepAspectRatio
         )
-        lbl = QLabel(parent=self)
-        lbl.setPixmap(pixmap)
-        addWidgetHCenter(self.imageLayout, lbl)
+        self.mainImageLbl.setPixmap(pixmap)
 
         if not hasattr(self, "processButton"):
             self.processButton = QPushButton("PROCESS", parent=self)
