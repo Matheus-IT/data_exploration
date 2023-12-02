@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 from PIL import Image
 from PyQt6 import QtCore
 import cv2 as cv
@@ -66,13 +67,10 @@ def addSpacing(layout, space_amount):
 
 
 def clearLayout(layout):
-    if layout is not None:
-        while layout.count():
-            child = layout.takeAt(0)
-            if child.widget() is not None:
-                child.widget().deleteLater()
-            elif child.layout() is not None:
-                clearLayout(child.layout())
+    while layout.count():
+        child = layout.takeAt(0)
+        if child.widget():
+            child.widget().deleteLater()
 
 
 # -----------------------------------------------------------------------------
@@ -107,6 +105,10 @@ class AppWindow(QWidget):
         self.container.addWidget(mainLayoutContainer)
 
         self.uploadButton = self.setupUploadButton()
+
+        # initializing side layout to be used latter
+        self.sideLayout = QVBoxLayout()
+        self.container.addLayout(self.sideLayout)
 
         self.setLayout(self.container)
 
@@ -147,10 +149,7 @@ class AppWindow(QWidget):
         clt = KMeans(number_of_clusters)
         clt.fit(self.image_to_process)
 
-        self.sideLayout = QVBoxLayout()
-        self.container.addLayout(self.sideLayout)
-
-        layout = QVBoxLayout()
+        clearLayout(self.sideLayout)
 
         for color in clt.cluster_centers_:
             rgbValue = (
@@ -173,9 +172,7 @@ class AppWindow(QWidget):
             copyButton.clicked.connect(partial(self.copyText, rgbValue))
             hLayout.addWidget(copyButton)
 
-            layout.addWidget(background)
-
-        self.sideLayout.addLayout(layout)
+            self.sideLayout.addWidget(background)
 
     def setupUploadButton(self):
         self.uploadButton = QPushButton("UPLOAD", parent=self)
