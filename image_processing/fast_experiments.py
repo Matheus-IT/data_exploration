@@ -20,4 +20,9 @@ import pydicom
 with Timer():
     MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D3-0051/"
     ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm")
-    ic(ds[0x8, 0x5])
+    ic(ds[0x28, 0x2])  # Samples per Pixel
+    ic(ds[0x28, 0x10])  # Rows
+    ic(ds[0x28, 0x11])  # Columns
+    ic(ds[0x28, 0x100])  # Bits Allocated
+    ic(ds[0x28, 0x101])  # Bits Stored
+    ic(ds[0x28, 0x102])  # High Bit
