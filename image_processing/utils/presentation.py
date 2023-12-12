@@ -144,14 +144,15 @@ def display_side_by_side(img1_array, img2_array):
     new_img.show()
 
 
-def show_image(img):
+def show_image(img, title="Image", wait=True):
     img = resize_image(img, 500, 500)
-    cv.imshow("Image", img)
-    while True:
-        key = cv.waitKey(1) & 0xFF
-        if key == ord("q") or cv.getWindowProperty("Image", cv.WND_PROP_VISIBLE) < 1:
-            break
-    cv.destroyAllWindows()
+    cv.imshow(title, img)
+    if wait:
+        while True:
+            key = cv.waitKey(1) & 0xFF
+            if key == ord("q") or cv.getWindowProperty(title, cv.WND_PROP_VISIBLE) < 1:
+                break
+        cv.destroyAllWindows()
 
 
 def resize_image(image, new_width=None, new_height=None):
@@ -170,3 +171,70 @@ def resize_image(image, new_width=None, new_height=None):
     resized_image = cv.resize(image, (new_width, new_height))
 
     return resized_image
+
+
+def show_rgb(image, split=False):
+    if split:
+        b, g, r = cv.split(image)
+
+        show_image(b, "Blue Channel", wait=False)
+        show_image(g, "Green Channel", wait=False)
+        show_image(r, "Red Channel", wait=False)
+
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+    else:
+        show_image(image, "RGB Image")
+
+
+def show_hsv(image, split=False):
+    image = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
+    if split:
+        h, s, v = cv.split(image)
+
+        show_image(h, "Hue Channel", wait=False)
+        show_image(s, "Saturation Channel", wait=False)
+        show_image(v, "Value Channel", wait=False)
+
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+    else:
+        show_image(image, "HSV Image")
+
+
+def show_lab(image, split=False):
+    image = cv.cvtColor(image, cv.COLOR_BGR2LAB)
+
+    if split:
+        l, a, b = cv.split(image)
+
+        show_image(l, "L Channel", wait=False)
+        show_image(a, "A Channel", wait=False)
+        show_image(b, "B Channel", wait=False)
+
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+    else:
+        show_image(image, "LAB Image")
+
+
+def show_ycrcb(image, split=False):
+    image = cv.cvtColor(image, cv.COLOR_BGR2YCrCb)
+
+    if split:
+        y, cr, cb = cv.split(image)
+
+        show_image(y, "Y Channel", wait=False)
+        show_image(cr, "CR Channel", wait=False)
+        show_image(cb, "CB Channel", wait=False)
+
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+    else:
+        show_image(image, "YCRCB Image")
+
+
+def show_gray(image):
+    image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    show_image(image, "Grayscale Image")

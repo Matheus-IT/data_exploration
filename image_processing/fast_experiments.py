@@ -6,6 +6,12 @@ from utils.presentation import (
     show_file_dataset_info,
     show_pixel_array_info,
     display_side_by_side,
+    show_image,
+    show_rgb,
+    show_hsv,
+    show_lab,
+    show_gray,
+    show_ycrcb,
 )
 import cv2 as cv
 from utils.image_normalization import normalize, denormalize
@@ -17,12 +23,5 @@ from PIL import Image
 import pydicom
 
 
-with Timer():
-    MAMMOGRAPHY_DATASET_PATH = "/home/matheuscosta/Documents/mammography-dataset/my_subdataset/subdataset_v4/D3-0051/"
-    ds = pydicom.dcmread(MAMMOGRAPHY_DATASET_PATH + "1-1.dcm")
-    ic(ds[0x28, 0x2])  # Samples per Pixel
-    ic(ds[0x28, 0x10])  # Rows
-    ic(ds[0x28, 0x11])  # Columns
-    ic(ds[0x28, 0x100])  # Bits Allocated
-    ic(ds[0x28, 0x101])  # Bits Stored
-    ic(ds[0x28, 0x102])  # High Bit
+image = cv.imread("image_processing/images/man.jpg")
+show_ycrcb(image)
