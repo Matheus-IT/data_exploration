@@ -2,6 +2,7 @@ import numpy as np
 from pydicom import FileDataset
 import matplotlib.pyplot as plt
 from PIL import Image, ImageFilter
+import cv2 as cv
 
 
 draw_line = lambda: print("=" * 50)
@@ -141,3 +142,31 @@ def display_side_by_side(img1_array, img2_array):
     new_img.paste(img2, (img1.width, 0))
 
     new_img.show()
+
+
+def show_image(img):
+    img = resize_image(img, 500, 500)
+    cv.imshow("Image", img)
+    while True:
+        key = cv.waitKey(1) & 0xFF
+        if key == ord("q") or cv.getWindowProperty("Image", cv.WND_PROP_VISIBLE) < 1:
+            break
+    cv.destroyAllWindows()
+
+
+def resize_image(image, new_width=None, new_height=None):
+    # Get the original dimensions
+    height, width = image.shape[:2]
+
+    # Calculate aspect ratio
+    if new_width is None:
+        aspect_ratio = new_height / float(height)
+        new_width = int(width * aspect_ratio)
+    else:
+        aspect_ratio = new_width / float(width)
+        new_height = int(height * aspect_ratio)
+
+    # Resize the image
+    resized_image = cv.resize(image, (new_width, new_height))
+
+    return resized_image
