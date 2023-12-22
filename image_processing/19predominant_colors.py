@@ -22,21 +22,6 @@ from PyQt6.QtCore import Qt, QMimeData
 
 
 # helpers ---------------------------------------------------------------------
-def centroidHistogram(clt):
-    # Create a histogram for the clusters based on the pixels in each cluster
-    # Get the labels for each cluster
-    numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
-
-    # Create our histogram
-    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
-
-    # normalize the histogram, so that it sums to one
-    hist = hist.astype("float")
-    hist /= hist.sum()
-
-    return hist
-
-
 def plotColors(hist, centroids):
     # Create our blank barchart
     bar = np.zeros((100, 500, 3), dtype="uint8")
