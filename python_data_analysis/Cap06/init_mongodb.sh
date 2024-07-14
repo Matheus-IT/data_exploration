@@ -1,1 +1,0 @@
-docker run --name mymongodb -e MONGO_INITDB_ROOT_USERNAME=$MY_MONGO_USERNAME -e MONGO_INITDB_ROOT_PASSWORD=$MY_MONGO_PASSWORD -e MONGO_INITDB_DATABASE=$MY_MONGO_DATABASE --mount source=mongodb_data_analysis,target=/etc/mongo -d -p 27017:27017 mongo:5.0.9
